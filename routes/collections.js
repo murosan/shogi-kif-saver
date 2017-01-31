@@ -77,7 +77,7 @@ router.get('/:collectionId/edit', authenticationEnsurer, csrfProtection, (req, r
     if (functions.isMine(req, collection)) { // 作成者自身かどうか
       Kif.findAll({
         where: { collectionId: collection.collectionId },
-        order: '"createdDate" ASC'
+        order: '"createdDate" DESC'
       }).then((extractedkif) => {
         extractedkif.forEach((kif) => {
           functions.timeFormatter(kif);
