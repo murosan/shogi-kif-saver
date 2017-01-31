@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li(class="active") New Album
+  form(id="forms" method="post", action="/collections")
+    input(type="hidden" name="_csrf" value!="#{csrfToken}")
+    div(class="form-group")
+      label(for="collectionName") Title
+      input(class="form-control validate[required, maxSize[25]]"
+            type="text" name="collectionName" placeholder="Input Text")
+    div
+      button(class="btn btn-info" type="submit") Create
+  hr

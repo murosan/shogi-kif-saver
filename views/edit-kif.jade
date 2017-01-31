@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li
+        a(href="/collections/#{kif.collectionId}") Album
+      li
+        a(href="/collections/#{kif.collectionId}/kifs/#{kif.kifId}") Kif
+      li(class="active") Edit Kif
+  div
+    form(id="forms" method="post", action="/collections/#{kif.collectionId}/kifs/#{kif.kifId}?edit=1")
+      input(type="hidden" name="_csrf" value!="#{csrfToken}")
+      div(class="form-group")
+        label(for="kifDescription") Title
+        input(id="kifDescription" class="form-control validate[required, maxSize[25]]"
+              type="text" name="kifDescription" value="#{kif.kifDescription}" placeholder="Input Text")
+      div(class="form-group")
+        label(for="kifdata") Kif
+        textarea(id="kifdata" class="form-control validate[required]" name="kifdata"
+                placeholder="1 ７六歩(77)\n2 ８四歩(83)\n3 ２六歩(27)\n4 ３四歩(33)\n..." rows="10") #{kif.kifdata}
+      div(class="form-group")
+        label(for="comment") Comment
+        textarea(id="comment" class="form-control" name="comment" placeholder="Input Comments" rows="6") #{kif.comment}
+      button(class="btn btn-default" type="submit")
+        span(class="glyphicon glyphicon-ok")
+  hr
+  div
+    form(method="post", action="/collections/#{kif.collectionId}/kifs/#{kif.kifId}?delete=1")
+      input(type="hidden" name="_csrf" value!="#{csrfToken}")
+      button(class="btn btn-danger" type="submit" onclick="return confirm('削除しますか？')")
+        span(class="glyphicon glyphicon-trash")
+    p

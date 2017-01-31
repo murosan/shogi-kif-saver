@@ -1,0 +1,48 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li
+        a(href="/collections/#{collection.collectionId}") Album
+      li(class="active") Edit Album
+  div
+    form(id="forms" method="post", action="/collections/#{collection.collectionId}?edit=1")
+      input(type="hidden" name="_csrf" value!="#{csrfToken}")
+      div(class="form-group")
+        label(for="collectionName") Title
+        input(id="collectionName" class="form-control validate[required, maxSize[25]]"
+              type="text" name="collectionName"
+              value="#{collection.collectionName}" placeholder="Text input")
+        p created-by: #{collection.user.username}
+      button(class="btn btn-default" type="submit")
+        span(class="glyphicon glyphicon-ok")
+  div
+    h4 Kif List
+    - var hasKif = kifs.length > 0
+    if hasKif
+      table(class="table")
+        tr
+          th Del
+          th Date
+          th Title
+        each kif in kifs
+          tr
+            td
+              form(method="post", action="/collections/#{collection.collectionId}/kifs/#{kif.kifId}?delete=1")
+                input(type="hidden" name="_csrf" value!="#{csrfToken}")
+                button(class="btn btn-default btn-sm" type="submit" onclick="return confirm('削除しますか？')")
+                  span(class="glyphicon glyphicon-trash")
+            td #{kif.formattedCreatedDate}
+            td #{kif.kifDescription}
+  hr
+  div
+    form(method="post", action="/collections/#{collection.collectionId}?delete=1")
+      input(type="hidden" name="_csrf" value!="#{csrfToken}")
+      button(class="btn btn-danger" type="submit"
+            onclick="return confirm('このアルバムの中にある全ての棋譜が消えます。よろしいですか？')") Delete Album
+      p
+  a(class="btn btn-link btn-lg" id="toTop")
+    span(class="glyphicon glyphicon-chevron-up")

@@ -1,0 +1,7 @@
+{
+  "name": "shogi-kif-saver",
+  "description": "将棋の棋譜保存サイト",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}

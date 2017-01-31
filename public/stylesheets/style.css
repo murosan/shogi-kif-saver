@@ -1,8 +1,22 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.panel {
+  white-space: pre-wrap;
 }
-
-a {
-  color: #00B7FF;
+.table {
+  white-space: pre-wrap;
+}
+.btn{
+  white-space: pre-wrap;
+}
+#kif-div{
+  display: none;
+}
+#comment-area{
+  display: none;
+}
+#toTop{
+  display: none;
+  color: gray;
+  position: fixed;
+  bottom: 30px;
+  right: 50px;
 }

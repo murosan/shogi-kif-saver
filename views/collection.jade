@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li(class="active") Album
+  div(class="panel panel-default")
+    div(class="panel-heading")
+      h3 #{collection.collectionName}
+    div(class="panel-footer")
+      p created-by: #{collection.user.username}
+  - var isMine = parseInt(user.id) === collection.user.userId
+  if isMine
+    div(class="btn-group")
+      a(class="btn btn-default" href="/collections/#{collection.collectionId}/kifs/newKIF") Add Kif
+      a(class="btn btn-default" href="/collections/#{collection.collectionId}/edit") Edit Album
+  h3 Kif List
+  - var hasKif = kifs.length > 0
+  if hasKif
+    table(class="table")
+      tr
+        th Date
+        th Title
+      each kif in kifs
+        tr
+          td 
+            a(class="btn btn-link" role="button"
+              href="/collections/#{kif.collectionId}/kifs/#{kif.kifId}") #{kif.formattedCreatedDate}
+          td 
+            label #{kif.kifDescription}
+  hr
+  a(class="btn btn-link btn-lg" id="toTop" href="#")
+    span(class="glyphicon glyphicon-chevron-up")

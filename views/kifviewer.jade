@@ -1,0 +1,51 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li
+        a(href="/collections/#{kif.collectionId}") Album
+      li(class="active") Kif
+  div(class="panel panel-default")
+    div(class="panel-heading")
+      h3 #{kif.kifDescription}
+    div(class="panel-footer")
+      p created-by: #{kif.user.username}
+  - var isMine = parseInt(user.id) === kif.userId
+  if isMine
+    div
+      a(class="btn btn-default"
+        href="/collections/#{kif.collectionId}/kifs/#{kif.kifId}/edit") Edit
+      p
+  div
+    table(class="table")
+      tr
+        td
+          text(id="date-area") #{kif.formattedCreatedDate}
+      tr
+        td
+          div(class="btn-group btn-group-justified")
+            a(class="btn btn-default" id="show-kif") ▶︎棋譜
+            a(class="btn btn-default" id="hide-kif" style="display: none") ▼棋譜
+          div(id="kif-div")
+            text(id="kif-area") #{kif.kifdata}
+            div
+              button(class="btn btn-default btn-xs" id="kif-select") 棋譜を全選択
+            div(id="board-on")
+              button(class="btn btn-default btn-xs") 盤面表示
+              span(class="label label-warning") 外部サイトのブックマークレット。リロードで消えます。
+      tr
+        td
+          div(class="btn-group btn-group-justified")
+            a(class="btn btn-default" id="show-comment") ▶︎コメント
+            a(class="btn btn-default" id="hide-comment" style="display: none") ▼コメント
+          div
+            text(id="comment-area") #{kif.comment}
+  div
+    hr
+    a(class="btn btn-default" href="/collections/#{kif.collectionId}") back
+    p
+  a(class="btn btn-link btn-lg" id="toTop")
+      span(class="glyphicon glyphicon-chevron-up")

@@ -1,5 +1,31 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+  div(class="jumbotron")
+    h1 棋譜保存サイト
+    p アルバムを作り、将棋の棋譜を保存できます。
+    if !user
+      a(class="btn btn-primary" href="/login") Login Page
+  if user
+    div
+      a(class="btn btn-default" href="/collections/newC") New Album
+    - var hasCollection = collections.length > 0
+    if hasCollection
+      h3 Album List
+      table(class="table")
+        tr
+          th Created-by
+          th Title
+        each collection in collections
+          tr
+            td #{collection.user.username}
+            td
+              a(class="btn btn-link"
+                href="/collections/#{collection.collectionId}") #{collection.collectionName}
+  hr
+  a(class="btn btn-link btn-lg" id="toTop")
+    span(class="glyphicon glyphicon-chevron-up")

@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  div
+    ol(class="breadcrumb")
+      li
+        a(href="/") Home
+      li(class="active") Login
+  a(class="btn btn-default" href="/auth/github") login with GitHub
