@@ -143,11 +143,11 @@
 	      selected.addRange(range); // 選択させる
 	      return true;
 	    } else {
-	      alert('棋譜欄をクリックしてから、もう一度押してください。');
+	      alert('棋譜欄をクリックまたは一部を選択してから、もう一度押してください。');
 	      return false;
 	    }
 	  } else {
-	    alert('棋譜欄をクリックしてから、もう一度押してください。');
+	    alert('棋譜欄をクリックまたは一部を選択してから、もう一度押してください。');
 	    return false;
 	  }
 	}
