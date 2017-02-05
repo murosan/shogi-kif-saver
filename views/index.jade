@@ -9,7 +9,9 @@ block content
     h1 将棋の棋譜保存
     ul
       li アルバムを作ってその中に将棋の棋譜を保存できます。
-      li 棋譜ジェネレータで、.kif形式の棋譜を生成できます。
+      li 
+        a(href="/kifgenerator" target="_blank") 棋譜ジェネレータ
+        | で、.kif形式の棋譜を生成できます。
     if !user
       a(class="btn btn-primary" href="/login") Login Page
   if user
