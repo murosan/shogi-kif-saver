@@ -37,6 +37,14 @@ body {
   white-space: pre-wrap;
 }
 
+#select-kif {
+  position: absolute;
+  top: 555px;
+  left: 20px;
+  width: 100px;
+  height: 50px;
+}
+
 .piece {
   width: 53px;
   height: 58px;
@@ -81,14 +89,6 @@ body {
 #RY-1 { background-image: url('../images/1RY.png'); }
 #UM-1 { background-image: url('../images/1UM.png'); }
 #emp { background-image: url('../images/blank.png'); }
-
-.confifrm-win {
-  position: absolute;
-  width: 106;
-  height: 116;
-  background-color: #474747;
-  display: none;
-}
 
 #previous-button {
   position: absolute;

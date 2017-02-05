@@ -946,100 +946,124 @@ html
         };
       
         window.onload = (() => {
-            emp = document.getElementById("emp"); // 空0
-            fu0 = document.getElementById("FU-0"); // 歩1
-            ky0 = document.getElementById("KY-0"); // 香2
-            ke0 = document.getElementById("KE-0"); // 桂3
-            gi0 = document.getElementById("GI-0"); // 銀4
-            ki0 = document.getElementById("KI-0"); // 金5
-            ka0 = document.getElementById("KA-0"); // 角6
-            hi0 = document.getElementById("HI-0"); // 飛7
-            gy0 = document.getElementById("GY-0"); // 玉8
-            ou0 = document.getElementById("OU-0"); // 王9
-          
-            to0 = document.getElementById("TO-0"); // と10
-            ny0 = document.getElementById("NY-0"); // 成香11
-            nk0 = document.getElementById("NK-0"); // 成桂12
-            ng0 = document.getElementById("NG-0"); // 成銀13
-            um0 = document.getElementById("UM-0"); // 馬15
-            ry0 = document.getElementById("RY-0"); // 龍16
-          
-            fu1 = document.getElementById("FU-1"); // 歩17
-            ky1 = document.getElementById("KY-1"); // 香18
-            ke1 = document.getElementById("KE-1"); // 桂19
-            gi1 = document.getElementById("GI-1"); // 銀20
-            ki1 = document.getElementById("KI-1"); // 金21
-            ka1 = document.getElementById("KA-1"); // 角22
-            hi1 = document.getElementById("HI-1"); // 飛23
-            gy1 = document.getElementById("GY-1"); // 玉24
-            ou1 = document.getElementById("OU-1"); // 玉25
-          
-            to1 = document.getElementById("TO-1"); // と26
-            ny1 = document.getElementById("NY-1"); // 成香27
-            nk1 = document.getElementById("NK-1"); // 成桂28
-            ng1 = document.getElementById("NG-1"); // 成銀29
-            um1 = document.getElementById("UM-1"); // 馬31
-            ry1 = document.getElementById("RY-1"); // 龍32
-          
-            pieces = [emp,
-                      fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0,
-                      to0, ny0, nk0, ng0, emp, um0, ry0,
-                      fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1,
-                      to1, ny1, nk1, ng1, emp, um1, ry1
-                      ];
-                    
-            //初期配置
-            places = [
-                      [18, 19, 20, 21, 24, 21, 20, 19, 18],
-                      [0, 23, 0, 0, 0, 0, 0, 22, 0],
-                      [17, 17, 17, 17, 17, 17, 17, 17, 17],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                      [0, 6, 0, 0, 0, 0, 0, 7, 0],
-                      [2, 3, 4, 5, 9, 5, 4, 3, 2]
-                      ];
-                    
-            const preButton = document.getElementById("previous-button");
-            preButton.onclick = (() => {
-              if (1 < pastPlaces.length) {
-                kifArray.pop();
-                pastPlaces.pop();
-                pastFiCap.pop();
-                pastSeCap.pop();
-                for (var i=0; i<=8; i++) {
-                  for (var j=0; j<=8; j++) {
-                    places[i][j] = pastPlaces[pastPlaces.length - 1][i][j];
-                  }
-                }
-                for (var k=0; k<=9; k++) {
-                  fiCaptured[k] = pastFiCap[pastFiCap.length - 1][k];
-                  seCaptured[k] = pastSeCap[pastSeCap.length - 1][k];
-                }
-                if (selectedCapPiece) {
-                  selectedCapPiece.style.border = "none";
-                  selectedCapPiece = null;
-                  selectedPiece = null;
-                } else if (selectedPiece) {
-                  selP.parentElement.removeChild(selP);
-                  selectedPiece = null;
-                }
-                pastPlaces.pop();
-                pastFiCap.pop();
-                pastSeCap.pop();
-                turn = 1 - turn;
-                showBoard();
+          emp = document.getElementById("emp"); // 空0
+          fu0 = document.getElementById("FU-0"); // 歩1
+          ky0 = document.getElementById("KY-0"); // 香2
+          ke0 = document.getElementById("KE-0"); // 桂3
+          gi0 = document.getElementById("GI-0"); // 銀4
+          ki0 = document.getElementById("KI-0"); // 金5
+          ka0 = document.getElementById("KA-0"); // 角6
+          hi0 = document.getElementById("HI-0"); // 飛7
+          gy0 = document.getElementById("GY-0"); // 玉8
+          ou0 = document.getElementById("OU-0"); // 王9
+        
+          to0 = document.getElementById("TO-0"); // と10
+          ny0 = document.getElementById("NY-0"); // 成香11
+          nk0 = document.getElementById("NK-0"); // 成桂12
+          ng0 = document.getElementById("NG-0"); // 成銀13
+          um0 = document.getElementById("UM-0"); // 馬15
+          ry0 = document.getElementById("RY-0"); // 龍16
+        
+          fu1 = document.getElementById("FU-1"); // 歩17
+          ky1 = document.getElementById("KY-1"); // 香18
+          ke1 = document.getElementById("KE-1"); // 桂19
+          gi1 = document.getElementById("GI-1"); // 銀20
+          ki1 = document.getElementById("KI-1"); // 金21
+          ka1 = document.getElementById("KA-1"); // 角22
+          hi1 = document.getElementById("HI-1"); // 飛23
+          gy1 = document.getElementById("GY-1"); // 玉24
+          ou1 = document.getElementById("OU-1"); // 玉25
+        
+          to1 = document.getElementById("TO-1"); // と26
+          ny1 = document.getElementById("NY-1"); // 成香27
+          nk1 = document.getElementById("NK-1"); // 成桂28
+          ng1 = document.getElementById("NG-1"); // 成銀29
+          um1 = document.getElementById("UM-1"); // 馬31
+          ry1 = document.getElementById("RY-1"); // 龍32
+        
+          pieces = [emp,
+                    fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0,
+                    to0, ny0, nk0, ng0, emp, um0, ry0,
+                    fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1,
+                    to1, ny1, nk1, ng1, emp, um1, ry1
+                    ];
+                  
+          //初期配置
+          places = [
+                    [18, 19, 20, 21, 24, 21, 20, 19, 18],
+                    [0, 23, 0, 0, 0, 0, 0, 22, 0],
+                    [17, 17, 17, 17, 17, 17, 17, 17, 17],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [0, 6, 0, 0, 0, 0, 0, 7, 0],
+                    [2, 3, 4, 5, 9, 5, 4, 3, 2]
+                    ];
+                  
+          const selectKif = document.getElementById("select-kif");
+          selectKif.onclick = (() => {
+            var kifGArea = document.getElementById("kif-generate-area");
+            var range = document.createRange();
+            range.selectNodeContents(kifGArea);
+            var selected = window.getSelection();
+            // 選択できるかどうか
+            var forcusing = selected.focusNode
+            if (forcusing) {
+              var selectedArea = forcusing.parentElement;
+              if (selectedArea && selectedArea === range.startContainer) {
+                selected.addRange(range); // 選択させる
+                return true;
+              } else {
+                alert('棋譜欄の一部を選択してから、もう一度押してください。');
+                return false;
               }
-            });
-          
-            showBoard();
+            } else {
+              alert('棋譜欄の一部を選択してから、もう一度押してください。');
+              return false;
+            }
+          });
+
+          const preButton = document.getElementById("previous-button");
+          preButton.onclick = (() => {
+            if (1 < pastPlaces.length) {
+              kifArray.pop();
+              pastPlaces.pop();
+              pastFiCap.pop();
+              pastSeCap.pop();
+              for (var i=0; i<=8; i++) {
+                for (var j=0; j<=8; j++) {
+                  places[i][j] = pastPlaces[pastPlaces.length - 1][i][j];
+                }
+              }
+              for (var k=0; k<=9; k++) {
+                fiCaptured[k] = pastFiCap[pastFiCap.length - 1][k];
+                seCaptured[k] = pastSeCap[pastSeCap.length - 1][k];
+              }
+              if (selectedCapPiece) {
+                selectedCapPiece.style.border = "none";
+                selectedCapPiece = null;
+                selectedPiece = null;
+              } else if (selectedPiece) {
+                selP.parentElement.removeChild(selP);
+                selectedPiece = null;
+              }
+              pastPlaces.pop();
+              pastFiCap.pop();
+              pastSeCap.pop();
+              turn = 1 - turn;
+              showBoard();
+            }
+          });
+        
+          showBoard();
         });
       
       div(id="se-capture" class="cap-area")
       div(id="fi-capture" class="cap-area")
       div(id="board-area")
       div(id="kif-generate-area")
+      button(id="select-kif") 棋譜を全選択
     
       div(id="emp" class="piece")
     
