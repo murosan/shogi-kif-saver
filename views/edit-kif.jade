@@ -14,7 +14,7 @@ block content
     form(id="forms" method="post", action="/collections/#{kif.collectionId}/kifs/#{kif.kifId}?edit=1")
       input(type="hidden" name="_csrf" value!="#{csrfToken}")
       div(class="form-group")
-        label(for="kifDescription") Title
+        label(for="kifDescription") Kif Title
         input(id="kifDescription" class="form-control validate[required, maxSize[25]]"
               type="text" name="kifDescription" value="#{kif.kifDescription}" placeholder="Input Text")
       div(class="form-group")

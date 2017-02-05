@@ -12,7 +12,7 @@ block content
     form(id="forms" method="post", action="/collections/#{collection.collectionId}?edit=1")
       input(type="hidden" name="_csrf" value!="#{csrfToken}")
       div(class="form-group")
-        label(for="collectionName") Title
+        label(for="collectionName") Album Title
         input(id="collectionName" class="form-control validate[required, maxSize[25]]"
               type="text" name="collectionName"
               value="#{collection.collectionName}" placeholder="Text input")

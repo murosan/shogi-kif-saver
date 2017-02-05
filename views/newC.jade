@@ -9,7 +9,7 @@ block content
   form(id="forms" method="post", action="/collections")
     input(type="hidden" name="_csrf" value!="#{csrfToken}")
     div(class="form-group")
-      label(for="collectionName") Title
+      label(for="collectionName") Album Title
       input(class="form-control validate[required, maxSize[25]]"
             type="text" name="collectionName" placeholder="Input Text")
     div
