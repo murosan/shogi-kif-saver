@@ -1,0 +1,1083 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/stylesheets/kif-generator-style.css')
+  body
+    block content
+      script.
+        let turn = 0; //0=先手 1=後手
+        let selectedPiece; //選択された駒(int)
+        let selectedCapPiece; //選択された持ち駒(elm)
+        let selP; //選択された駒の背景が赤いver
+        let selR; //選択された行
+        let selC; //選択された列
+        let pieces = [];
+        let places = []; //駒配置
+        let fiCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//先手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉,　王]
+        let seCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//後手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉,　王]
+        const pastPlaces = []; //過去の駒配置
+        let pastFiCap = []; //過去の先手の持ち駒
+        let pastSeCap = []; //過去の後手の持ち駒
+        const capName = ['emp', 'fu', 'ky', 'ke', 'gi', 'ki', 'ka', 'hi', 'gy', 'ou',
+                         'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
+                         'emp', 'fu', 'ky', 'ke', 'gi', 'ki', 'ka', 'hi', 'gy', 'ou',
+                         'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
+                         ];
+        let emp, fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0, to0, ny0, nk0, ng0, um0, ry0,
+                 fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1, to1, ny1, nk1, ng1, um1, ry1;
+        const kifArray = [];
+        const kifRowMap = new Map();
+        kifRowMap.set(0, '一');
+        kifRowMap.set(1, '二');
+        kifRowMap.set(2, '三');
+        kifRowMap.set(3, '四');
+        kifRowMap.set(4, '五');
+        kifRowMap.set(5, '六');
+        kifRowMap.set(6, '七');
+        kifRowMap.set(7, '八');
+        kifRowMap.set(8, '九');
+        const kifColumnMap = new Map();
+        kifColumnMap.set(0, '９');
+        kifColumnMap.set(1, '８');
+        kifColumnMap.set(2, '７');
+        kifColumnMap.set(3, '６');
+        kifColumnMap.set(4, '５');
+        kifColumnMap.set(5, '４');
+        kifColumnMap.set(6, '３');
+        kifColumnMap.set(7, '２');
+        kifColumnMap.set(8, '１');
+        const kifStringMap = new Map();
+        kifStringMap.set(1, '歩');
+        kifStringMap.set(2, '香');
+        kifStringMap.set(3, '桂');
+        kifStringMap.set(4, '銀');
+        kifStringMap.set(5, '金');
+        kifStringMap.set(6, '角');
+        kifStringMap.set(7, '飛');
+        kifStringMap.set(8, '玉');
+        kifStringMap.set(9, '玉');//双玉仕様
+        kifStringMap.set(10, 'と');
+        kifStringMap.set(11, '成香');
+        kifStringMap.set(12, '成桂');
+        kifStringMap.set(13, '成銀');
+        kifStringMap.set(15, '馬');
+        kifStringMap.set(16, '龍');
+        kifStringMap.set(17, '歩');
+        kifStringMap.set(18, '香');
+        kifStringMap.set(19, '桂');
+        kifStringMap.set(20, '銀');
+        kifStringMap.set(21, '金');
+        kifStringMap.set(22, '角');
+        kifStringMap.set(23, '飛');
+        kifStringMap.set(24, '玉');
+        kifStringMap.set(25, '玉');//双玉仕様
+        kifStringMap.set(26, 'と');
+        kifStringMap.set(27, '成香');
+        kifStringMap.set(28, '成桂');
+        kifStringMap.set(29, '成銀');
+        kifStringMap.set(31, '馬');
+        kifStringMap.set(32, '龍');
+      
+        function whosePiece (x) { //誰の駒か
+          if(1 <= x && x <= 16) {
+            return 0; //先手の駒
+          } else if(16 <= x) {
+            return 1; //後手の駒
+          } else {
+            return null;
+          }
+        };
+      
+        function canPromote (x) { //成れる駒かどうか
+          return (1<=x && x<=4) || (6<=x && x<=7) || (17<=x && x<=20) || (22<=x && x<=23);
+        };
+      
+        function inEnemyArea (r) { //敵陣かどうか
+          if ((r<=2 && turn === 0) || (selR<=2 && turn === 0)) {
+            return true;
+          } else if ((r>=6 && turn === 1) || (selR>=6 && turn === 1)) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+      
+        function turnPiece (p) { //駒を1~9の範囲に(持ち駒判定のため)
+          if (p >= 26) { p -= 25; }
+          else if (p >= 17) { p -= 16; }
+          else if (p >= 10) { p -= 9; }
+          return p;
+        };
+      
+        function capPieceStyle (c, t, l) { //持ち駒表示の時にstyleを変更
+          c.style.top = t + "px";
+          c.style.left = l + "px";
+          c.style.display = "inline";
+          c.style.backgroundColor = "transparent";
+          c.style.border = "none";
+        };
+      
+        function captureIncrease (a, p) { //持ち駒追加
+          a[p] += 1;
+        };
+      
+        function captureDecrease (a, p) { //持ち駒減らす
+          a[p] -= 1; 
+        };
+      
+        function capClicked (c, pn) { //持ち駒をクリックした時
+          var whoseP = whosePiece(pn);
+          if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
+            if (!selectedPiece && !selectedCapPiece) {
+              selectedPiece = pn;
+              selectedCapPiece = c;
+              c.style.border = 1 + "px solid";
+              c.style.borderColor = "#FFA640";
+            } else if (selectedPiece && !selectedCapPiece) {
+              selectedPiece = null;
+              selP.parentElement.removeChild(selP);
+              capClicked(c, pn);
+            } else if (selectedPiece && selectedCapPiece) {
+              selectedCapPiece.style.border = "none";
+              selectedPiece = null;
+              selectedCapPiece = null;
+              capClicked(c, pn);
+            }
+          } 
+        };
+      
+        function selectTurnPiece (r, c) { //手番側が自分の駒をクリックしたとき
+          var b = document.getElementById("board-area");
+          var whoseP = whosePiece(places[r][c])
+          if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {
+            if (selectedCapPiece) {
+              selectedCapPiece.style.border = "none";
+              selectedCapPiece = null;
+              selectedPiece = null;
+            }
+            if (selectedPiece) { selP.parentElement.removeChild(selP); }
+            selectedPiece = places[r][c];
+            selP = pieces[selectedPiece].cloneNode(true);
+            selP.style.width = 52 + "px";
+            selP.style.height = 57 + "px";
+            selP.style.left = (c * 53 + 20) + "px";
+            selP.style.top = (r * 58 + 20) + "px";
+            selP.style.display = "inline";
+            selP.style.backgroundColor = "#FFA640";
+            selP.onclick = (() => {
+              selectedPiece = null;
+              selP.parentElement.removeChild(selP);
+            });
+            b.appendChild(selP);
+            selR = r;
+            selC = c;
+          } else if (selectedPiece) {
+            selectedPiece = null;
+            selP.parentElement.removeChild(selP);
+            selectTurnPiece(r,c);
+          }
+        };
+      
+        function selectUnTurnPiece (r, c) { //手番側が相手の駒をクリックしたとき
+          let putAndShow = (() => {
+            places[r][c] = selectedPiece; //駒の移動
+            places[selR][selC] = 0; //移動元をempに
+            selectedPiece = null;
+            turn = 1 - turn;
+            showBoard();
+          });
+          if (selectedPiece && movingCheck(selectedPiece, r, c)) { //駒が選択されている&&動きルールに従っている
+            if (canPromote(selectedPiece) && inEnemyArea(r)) {
+              if (confirm('成りますか？')) {
+                generateKif(r, c, 1);
+                selectedPiece += 9;
+              } else {//不成
+                generateKif(r, c, 2);
+              }
+            } else {//成れない駒
+              generateKif(r, c, 0);
+            }
+            var targetPiece = places[r][c];
+            if (10<=targetPiece){
+              targetPiece = turnPiece(targetPiece);
+            }
+            if (turn === 0) {
+              captureIncrease(fiCaptured, targetPiece);
+            } else if (turn === 1) {
+              captureIncrease(seCaptured, targetPiece);
+            }
+            putAndShow();
+          }
+        };
+      
+        function selectEmp (r, c) { //空のマスをクリックしたとき
+          let putAndShow = (() => {
+            places[r][c] = selectedPiece;
+            selectedPiece = null;
+            turn = 1 - turn;
+            showBoard();
+          });
+          if (selectedPiece && movingCheck(selectedPiece, r, c)) { //駒が選択されている&&動きルールに従っている
+            if (selectedCapPiece) { //持ち駒の場合
+              generateKif(r, c, 3);
+              if (turn === 0) {　captureDecrease(fiCaptured, selectedPiece);　}
+              else if (turn === 1) {　captureDecrease(seCaptured, turnPiece(selectedPiece));　}
+              selectedCapPiece = null;
+              putAndShow();
+            } else if (canPromote(selectedPiece) && inEnemyArea(r)) { //盤上の駒で成れる駒
+              if (confirm('成りますか？')) {
+                generateKif(r, c, 1);
+                selectedPiece = selectedPiece + 9;
+                places[selR][selC] = 0;
+                putAndShow();
+              } else { //不成
+                generateKif(r, c, 2);
+                places[selR][selC] = 0;
+                putAndShow();
+              }
+            } else { //盤上の駒で成れない駒
+              generateKif(r, c, 0);
+              places[selR][selC] = 0;
+              putAndShow();
+            }
+          }
+        
+        };
+      
+        function movingCheck (pn, r, c) {
+          var canMove = false;
+          switch (pn) {
+            case 1: case 17:
+              canMove = canPutFu(r, c);
+              break;
+            case 2: case 18:
+              canMove = canPutKy(r, c);
+              break;
+            case 3: case 19:
+              canMove = canPutKe(r, c);
+              break;
+            case 4: case 20:
+              canMove = canPutGi(r, c);
+              break;
+            case 5: case 21:
+            case 10: case 11: case 12: case 13:
+            case 26: case 27: case 28: case 29:
+              canMove = canPutKi(r, c);
+              break;
+            case 6: case 22:
+              canMove = canPutKa(r, c);
+              break;
+            case 7: case 23:
+              canMove = canPutHi(r, c);
+              break;
+            case 8: case 9: case 24: case 25:
+              canMove = canPutOu(r, c);
+              break;
+            case 15: case 31:
+              canMove = canPutUm(r, c);
+              break;
+            case 16: case 32:
+              canMove = canPutRy(r, c);
+              break;
+          }
+          return canMove;
+        }
+      
+        function canPutFu (r, c) {
+          const duplicatingFu = (() => { //二歩の判定 true=二歩 false=二歩じゃない
+            var result = false;
+            var row = 0;
+            var checkInColumn = (() => {
+              while (!result) {
+                result = ((turn === 0) && !(places[row][c] !== 1)) || ((turn === 1) && !(places[row][c] !== 17));
+                row += 1;
+                if (result || row === 9) { break; } 
+              }
+            });
+            if (selectedCapPiece) {
+              checkInColumn();
+            } else {
+              places[selR][selC] = 0;
+              checkInColumn();
+              places[selR][selC] = selectedPiece;
+            }
+            return result;
+          });
+        
+          const canMoveNextTime = (() => {
+            if (turn === 0) { 
+              return (r-1) >= 0;
+            } else if (turn === 1) {
+              return (r+1) <= 8;
+            } 
+          });
+        
+          if (selectedCapPiece) { //持ち駒が選択されていたら
+            return places[r][c] === 0 && !duplicatingFu();
+          }
+          if (!selectedCapPiece) { //持ち駒が選択されていなかったら
+            if ((turn === 0 && r !== selR - 1) || (turn === 1 && r !== selR + 1)) { //一行以上前だったら
+              return false;
+            }
+          }
+          if (duplicatingFu()) { //二歩なら
+            return false;
+          } else if (selectedCapPiece && ((turn === 0 && r === 0) || (turn === 1 && r === 8))) { //置けない場所なら
+            return false;
+          } else if (turn === whosePiece(places[r][c])) { //自分の駒なら
+            return false;
+          } else {
+            if (!canMoveNextTime()) {
+              selectedPiece += 9;
+            }
+            return true;
+          }
+        }
+      
+        function canPutKy (r, c) {
+          const canMoveNextTime = (() => {
+            if (turn === 0) {
+              return (r-1) >= 0;
+            } else if (turn === 1) {
+              return (r+1) <= 8;
+            } 
+          });
+        
+          if (!selectedCapPiece) {
+            if (selC === c) {
+              var result = true;
+              var row = selR;
+              if (turn === 0) {
+                var inColumn = [];
+                for (var x=0; x<9; x++) {
+                  inColumn.push(places[x][c]);
+                };
+                row -= 1;
+                while (result) {
+                  if (whosePiece(inColumn[row]) === 1) {
+                    if (row === r) {
+                      result== true;
+                      break;
+                    } else if (r < row) {
+                      result = false;
+                      break;
+                    }
+                  } else if (!(whosePiece(inColumn[row]) === 0)) {
+                    result = true;
+                  } else {
+                    result = false;
+                  }
+                  if (row === r) { break; }
+                  row -= 1;
+                }
+              } else if (turn === 1) {
+                var inColumn = [];
+                for (var x=0; x<9; x++) {
+                  inColumn.push(places[x][c]);
+                };
+                row += 1;
+                while (result) {
+                  if (whosePiece(inColumn[row]) === 0) {
+                    if (row === r) {
+                      result== true;
+                      break;
+                    } else if (r > row) {
+                      result = false;
+                      break;
+                    }
+                  } else if (!(whosePiece(inColumn[row]) === 1)) {
+                    result = true;
+                  } else {
+                    result = false;
+                  }
+                  if (row === r) { break; }
+                  row += 1;
+                }
+              }
+              if (!canMoveNextTime()) {
+                selectedPiece += 9;
+              }
+              return result;
+            } else {
+              return false;
+            }
+          } else if (selectedCapPiece) {
+              return places[r][c] === 0 && canMoveNextTime();
+          }
+        }
+      
+        function canPutKe (r, c) {
+          let nextRow, nextLeftCol, nextRightCol;
+          const canMoveNextTime = (() => {
+            if (turn === 0) {
+              nextRow = r - 2;
+              nextLeftCol = c - 1;
+              nextRightCol = c + 1;
+              if ((nextRow >= 0 && nextLeftCol >= 0) || (nextRow >= 0 && nextRightCol <= 8)) {
+                return true;
+              }
+            } else if (turn === 1) {
+              nextRow = r + 2;
+              nextLeftCol = c - 1;
+              nextRightCol = c + 1;
+              if ((nextRow <= 8 && nextLeftCol >= 0) || (nextRow <= 8 && nextRightCol <= 8)) {
+                return true;
+              }
+            }
+          });
+          if (!selectedCapPiece) {
+            nextLeftCol = selC - 1;
+            nextRightCol = selC + 1;
+            if (turn === 0) {
+              nextRow = selR - 2;
+              if (nextRow === r && (c === nextLeftCol || c === nextRightCol)) {
+                if (whosePiece(places[r][c] === 0)) {
+                  return false;
+                } else if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
+                  if (!canMoveNextTime()) { selectedPiece += 9; }
+                  return true;
+                }
+              }
+            } else if (turn === 1) {
+              nextRow = selR + 2;
+              if (nextRow === r && (c === nextLeftCol || c === nextRightCol)) {
+                if (whosePiece(places[r][c] === 1)) {
+                  return false;
+                } else if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
+                  if (!canMoveNextTime()) { selectedPiece += 9; }
+                  return true;
+                }
+              }
+            }
+          } else if (selectedCapPiece) {
+            return (places[r][c] === 0) && canMoveNextTime();
+          }
+        }
+      
+        function canPutGi (r, c) {
+          const placeMatch = (() => {
+            let result;
+            let insideResult = false;
+            let outsideResult = false;
+            let dr = -1;
+            let dc = -1;
+            while (dr <= 1) {
+              while (dc <= 1) {
+                insideResult = (selC + dc) === c;
+                if (insideResult) { break; }
+                dc++;
+              }
+              if (turn === 0) {
+                if ((dr === 0 && (dc === 1 || dc === -1)) || (dr === 1 && dc === 0)) {
+                  outsideResult = false;
+                } else {
+                  outsideResult = (selR + dr) === r;
+                }
+              } else if (turn === 1) {
+                if ((dr === 0 && (dc === 1 || dc === -1)) || (dr === -1 && dc === 0)) {
+                  outsideResult = false;
+                } else {
+                  outsideResult = (selR + dr) === r;
+                }
+              }
+              if (outsideResult && insideResult) { 
+                result = true;
+                break;
+              }
+              dr++;
+            }
+            return result;
+          });
+        
+          if (!selectedCapPiece) {
+            if (turn === 0) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            } else if (turn === 1) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            }
+          } else if (selectedCapPiece) {
+            return places[r][c] === 0;
+          }
+        }
+      
+        function canPutKi (r, c) {
+          const placeMatch = (() => {
+            let result;
+            let insideResult = false;
+            let outsideResult = false;
+            let dr = -1;
+            let dc = -1;
+            while (dr <= 1) {
+              while (dc <= 1) {
+                insideResult = (selC + dc) === c;
+                if (insideResult) { break; }
+                dc++;
+              }
+              if (turn === 0) {
+                if (dr === 1 && (dc === 1 || dc === -1)) {
+                  outsideResult = false;
+                } else {
+                  outsideResult = (selR + dr) === r;
+                }
+              } else if (turn === 1) {
+                if (dr === -1 && (dc === 1 || dc === -1)) {
+                  outsideResult = false;
+                } else {
+                  outsideResult = (selR + dr) === r;
+                }
+              }
+              if (outsideResult && insideResult) { 
+                result = true;
+                break;
+              }
+              dr++;
+            }
+            return result;
+          });
+        
+          if (!selectedCapPiece) {
+            if (turn === 0) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            } else if (turn === 1) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            }
+          } else if (selectedCapPiece) {
+            return places[r][c] === 0;
+          }
+        }
+      
+        function canPutKa (r, c) {
+          const checkMovement = (() => {
+            let movR = selR;
+            let movC = selC;
+            let result = false;
+            if (!result) {
+              movR++;
+              movC++;
+              while ((0 <= movR && movR <= 8) && (0 <= movC && movC <= 8)) {
+                if (whosePiece(places[movR][movC]) === turn) {
+                  break;
+                } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
+                  result = true;
+                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                  break;
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                movR++;
+                movC++;
+              }
+            }
+          
+            movR = selR;
+            movC = selC;
+            if (!result) {
+              movR--;
+              movC--;
+              while (0 <= movR && movR <= 8 && (0 <= movC && movC <= 8)) {
+                if (whosePiece(places[movR][movC]) === turn) {
+                  break;
+                } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
+                  result = true;
+                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                  break;
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                movR--;
+                movC--;
+              }
+            }
+          
+            movR = selR;
+            movC = selC;
+            if (!result) {
+              movR++;
+              movC--;
+              while (0 <= movR && movR <= 8 && (0 <= movC && movC <= 8)) {
+                if (whosePiece(places[movR][movC]) === turn) {
+                  break;
+                } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
+                  result = true;
+                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                  break;
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                movR++;
+                movC--;
+              }
+            }
+          
+            movR = selR;
+            movC = selC;
+            if (!result) {
+              movR--;
+              movC++;
+              while (0 <= movR && movR <= 8 && (0 <= movC && movC <= 8)) {
+                if (whosePiece(places[movR][movC]) === turn) {
+                  break;
+                } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
+                  result = true;
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                  break;
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                movR--;
+                movC++;
+              }
+            }
+          
+            return result;
+          });
+        
+          if (!selectedCapPiece) {
+            return checkMovement();
+          } else if (selectedCapPiece) {
+            return places[r][c] === 0;
+          }
+        }
+      
+        function canPutHi (r, c) {
+          const checkColumnMovement = (() => {// 横の動きをチェック
+            let result = false;
+            let fix = selR;
+            let mov = selC;
+            if (!result) {
+              mov++;
+              while (0 <= mov && mov <= 8) {
+                if (whosePiece(places[fix][mov]) === turn) {
+                  break;
+                } else if (places[fix][mov] === 0 && (mov === c)) {
+                  result = true;
+                } else if (whosePiece(places[fix][mov]) === (1 - turn) && !(mov === c)) {
+                  break;
+                } else if (whosePiece(places[fix][mov]) === (1 - turn) && (mov === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                mov++;
+              }
+            }
+          
+            fix = selR;
+            mov = selC;
+            if (!result) {
+              mov--;
+              while (0 <= mov && mov <= 8) {
+                if (whosePiece(places[fix][mov]) === turn) {
+                  break;
+                } else if (places[fix][mov] === 0 && (mov === c)) {
+                  result = true;
+                } else if (whosePiece(places[fix][mov]) === (1 - turn) && !(mov === c)) {
+                  break;
+                } else if (whosePiece(places[fix][mov]) === (1 - turn) && (mov === c)) {
+                  result = true;
+                }
+                if (result) { break; }
+                mov--;
+              }
+            }
+            return result;
+          });
+        
+          const checkRowMovement = (() => {// 縦の動きをチェック
+            let result = false;
+            let mov = selR;
+            let fix = selC;
+            if (!result) {
+              mov++;
+              while (0 <= mov && mov <= 8) {
+                if (whosePiece(places[mov][fix]) === turn) {
+                  break;
+                } else if (places[mov][fix] === 0 && (mov === r)) {
+                  result = true;
+                } else if (whosePiece(places[mov][fix]) === (1 - turn) && !(mov === r)) {
+                  break;
+                } else if (whosePiece(places[mov][fix]) === (1 - turn) && (mov === r)) {
+                  result = true;
+                }
+                if (result) { break; }
+                mov++;
+              }
+            }
+          
+            mov = selR;
+            fix = selC;
+            if (!result) {
+              mov--;
+              while (0 <= mov && mov <= 8) {
+                if (whosePiece(places[mov][fix]) === turn) {
+                  break;
+                } else if (places[mov][fix] === 0 && (mov === r)) {
+                  result = true;
+                } else if (whosePiece(places[mov][fix]) === (1 - turn) && !(mov === r)) {
+                  break;
+                } else if (whosePiece(places[mov][fix]) === (1 - turn) && (mov === r)) {
+                  result = true;
+                }
+                if (result) { break; }
+                mov--;
+              }
+            }
+            return result;
+          });
+        
+          if (!selectedCapPiece) {
+            if (selR === r) {
+              if (checkColumnMovement(r, c)) { return true; }
+              else { return false; }
+            } else if (selC === c) {
+              if (checkRowMovement(r, c)) { return true; }
+              else { return false; }
+            }
+          } else if (selectedCapPiece) {
+            return places[r][c] === 0;
+          }
+        }
+      
+        function canPutOu (r, c) {
+          const placeMatch = (() => {
+            let result;
+            let insideResult = false;
+            let outsideResult = false;
+            let dr = -1;
+            let dc = -1;
+            while(dr <= 1) {
+              while(dc <= 1) {
+                insideResult = (selC + dc) === c;
+                if (insideResult) { break; }
+                dc++;
+              }
+              outsideResult = (selR + dr) === r;
+              if (outsideResult && insideResult) { 
+                result = true;
+                break;
+              }
+              dr++;
+            }
+            return result;
+          });
+        
+          if (!selectedCapPiece) {
+            if (turn === 0) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            } else if (turn === 1) {
+              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
+                if (placeMatch()) {
+                  return true;
+                }
+              }
+            }
+          } else {
+            return false;
+          }
+        }
+      
+        function canPutUm (r, c) {
+          return canPutOu(r, c) || canPutKa(r, c);
+        }
+      
+        function canPutRy (r, c) {
+          return canPutOu(r, c) || canPutHi(r, c);
+        }
+      
+        function generateKif (r, c, status) { // status: 0=なし 1=成 2=不成 3=打
+          switch(status) {
+            case 0:
+              status = '';
+              break;
+            case 1:
+              status = '成';
+              break;
+            case 2:
+              status = '不成';
+              break;
+            case 3:
+              status = '打';
+              break;
+          }
+          let generatedKif = kifColumnMap.get(c) + kifRowMap.get(r) +
+                          kifStringMap.get(selectedPiece) + status;
+          if (status !== '打') {
+            generatedKif = generatedKif + '(' + (9-selC) + (selR+1) + ')'
+          }
+          kifArray.push(generatedKif);
+        };
+      
+        function showKif () { //棋譜表示
+          var kifArea = document.getElementById('kif-generate-area');
+          var fragment = document.createDocumentFragment();
+          while (kifArea.firstChild) {
+            kifArea.removeChild(kifArea.firstChild);
+          }
+          kifArray.forEach((k, i) => {
+            k = (i+1) + ' ' + k + '\n';
+            fragment.appendChild(document.createTextNode(k));
+          });
+          kifArea.appendChild(fragment);
+          kifArea.scrollTop = kifArea.scrollHeight;
+        };
+      
+        function showCapture (id, t, cap) { //持ち駒表示(id=fi-capture or se-capture, t=turn, cap=fiCaptured or seCaptured)
+          const capArea = document.getElementById(id);
+          const fragment = document.createDocumentFragment();
+          while (capArea.firstChild) {
+            capArea.removeChild(capArea.firstChild);
+          }
+        
+          for (var i=1; i<=9; i++) {
+            if (0 < cap[i]) {
+              let pn = i;
+              if (t === 1) { pn += 16; }
+              for (var j=1; j<=cap[i]; j++) {
+                let x;
+                let y;
+                if (i === 1) { x = 225; y = 5 + j * 7 }
+                else if (i === 2) { x = 150; y = 100 + j * 10; }
+                else if (i === 3) { x = 150; y = 5 + j * 10; }
+                else if (i === 4) { x = 75; y = 100 + j * 10; }
+                else if (i === 5) { x = 75; y = 5 + j * 10; }
+                else if (i === 6) { x = 5; y = 120 + j * 10; }
+                else if (i === 7) { x = 5; y = 60 + j * 10; }
+                else if (i === 8) { x = 5; y = 5; }
+                else if (i === 9) { x = 5; y = 15; }
+                if (t === 1) {
+                  x = -x + 230;
+                  y = -y + 150;
+                }
+                let c = eval(capName[i] + t).cloneNode(true);
+                capPieceStyle(c, x, y);
+                c.onclick = (() => {
+                  capClicked(c, pn);
+                });
+                fragment.appendChild(c);
+              }
+            }
+          }
+          capArea.appendChild(fragment);
+        };
+      
+        function showBoard () { //盤面表示
+          const boardArea = document.getElementById('board-area');
+          while(boardArea.firstChild) {
+            boardArea.removeChild(boardArea.firstChild);
+          }
+          for(var r=0; r<=8; r++) {
+            for(var c=0; c<=8; c++) {
+              var z = pieces[places[r][c]];
+              var p = z.cloneNode(true);
+              p.style.left = (c * 53 + 20) + "px";
+              p.style.top = (r * 58 + 20) + "px";
+              p.style.display = "inline";
+              boardArea.appendChild(p);
+              if (places[r][c] !== 0) { //駒があれば
+                (function() {
+                  var _r = r, _c = c;
+                  p.onclick = (() => {
+                    var whoseP = whosePiece(places[_r][_c]);
+                    if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
+                      selectTurnPiece(_r, _c);
+                    } else if ((turn === 0 && whoseP === 1) || (turn === 1 && whoseP === 0)) {//手番側が相手の駒をクリックしたら
+                      if (selectedPiece) {
+                        selectUnTurnPiece(_r, _c);
+                      }
+                    }
+                  });
+                })();
+              }
+              if (places[r][c] === 0) { //空ますクリック
+                (function() {
+                  var _r = r, _c = c;
+                  p.onclick = (() => {
+                    if (selectedPiece|| selectedCapPiece) { selectEmp(_r, _c); }
+                  });
+                })();
+              }
+            }
+          }
+        
+          // 駒配置、持ち駒を記憶する
+          let pPlaces = [];
+          let pFCap = [];
+          let pSCap = [];
+          for (var i=0; i<=8; i++) {
+            pPlaces[i] = [];
+            for (var j=0; j<=8; j++) {
+              pPlaces[i][j] = places[i][j];
+            }
+          }
+          for (var k=0; k<=9; k++) {
+            pFCap[k] = fiCaptured[k];
+            pSCap[k] = seCaptured[k];
+          }
+          pastPlaces.push(pPlaces);
+          pastFiCap.push(pFCap);
+          pastSeCap.push(pSCap);
+          
+          showCapture("fi-capture", 0, fiCaptured);
+          showCapture("se-capture", 1, seCaptured);
+          showKif();
+        };
+      
+        window.onload = (() => {
+            emp = document.getElementById("emp"); // 空0
+            fu0 = document.getElementById("FU-0"); // 歩1
+            ky0 = document.getElementById("KY-0"); // 香2
+            ke0 = document.getElementById("KE-0"); // 桂3
+            gi0 = document.getElementById("GI-0"); // 銀4
+            ki0 = document.getElementById("KI-0"); // 金5
+            ka0 = document.getElementById("KA-0"); // 角6
+            hi0 = document.getElementById("HI-0"); // 飛7
+            gy0 = document.getElementById("GY-0"); // 玉8
+            ou0 = document.getElementById("OU-0"); // 王9
+          
+            to0 = document.getElementById("TO-0"); // と10
+            ny0 = document.getElementById("NY-0"); // 成香11
+            nk0 = document.getElementById("NK-0"); // 成桂12
+            ng0 = document.getElementById("NG-0"); // 成銀13
+            um0 = document.getElementById("UM-0"); // 馬15
+            ry0 = document.getElementById("RY-0"); // 龍16
+          
+            fu1 = document.getElementById("FU-1"); // 歩17
+            ky1 = document.getElementById("KY-1"); // 香18
+            ke1 = document.getElementById("KE-1"); // 桂19
+            gi1 = document.getElementById("GI-1"); // 銀20
+            ki1 = document.getElementById("KI-1"); // 金21
+            ka1 = document.getElementById("KA-1"); // 角22
+            hi1 = document.getElementById("HI-1"); // 飛23
+            gy1 = document.getElementById("GY-1"); // 玉24
+            ou1 = document.getElementById("OU-1"); // 玉25
+          
+            to1 = document.getElementById("TO-1"); // と26
+            ny1 = document.getElementById("NY-1"); // 成香27
+            nk1 = document.getElementById("NK-1"); // 成桂28
+            ng1 = document.getElementById("NG-1"); // 成銀29
+            um1 = document.getElementById("UM-1"); // 馬31
+            ry1 = document.getElementById("RY-1"); // 龍32
+          
+            pieces = [emp,
+                      fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0,
+                      to0, ny0, nk0, ng0, emp, um0, ry0,
+                      fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1,
+                      to1, ny1, nk1, ng1, emp, um1, ry1
+                      ];
+                    
+            //初期配置
+            places = [
+                      [18, 19, 20, 21, 24, 21, 20, 19, 18],
+                      [0, 23, 0, 0, 0, 0, 0, 22, 0],
+                      [17, 17, 17, 17, 17, 17, 17, 17, 17],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                      [0, 6, 0, 0, 0, 0, 0, 7, 0],
+                      [2, 3, 4, 5, 9, 5, 4, 3, 2]
+                      ];
+                    
+            const preButton = document.getElementById("previous-button");
+            preButton.onclick = (() => {
+              if (1 < pastPlaces.length) {
+                kifArray.pop();
+                pastPlaces.pop();
+                pastFiCap.pop();
+                pastSeCap.pop();
+                for (var i=0; i<=8; i++) {
+                  for (var j=0; j<=8; j++) {
+                    places[i][j] = pastPlaces[pastPlaces.length - 1][i][j];
+                  }
+                }
+                for (var k=0; k<=9; k++) {
+                  fiCaptured[k] = pastFiCap[pastFiCap.length - 1][k];
+                  seCaptured[k] = pastSeCap[pastSeCap.length - 1][k];
+                }
+                if (selectedCapPiece) {
+                  selectedCapPiece.style.border = "none";
+                  selectedCapPiece = null;
+                  selectedPiece = null;
+                } else if (selectedPiece) {
+                  selP.parentElement.removeChild(selP);
+                  selectedPiece = null;
+                }
+                pastPlaces.pop();
+                pastFiCap.pop();
+                pastSeCap.pop();
+                turn = 1 - turn;
+                showBoard();
+              }
+            });
+          
+            showBoard();
+        });
+      
+      div(id="se-capture" class="cap-area")
+      div(id="fi-capture" class="cap-area")
+      div(id="board-area")
+      div(id="kif-generate-area")
+    
+      div(id="emp" class="piece")
+    
+      div(id="FU-0" class="piece")
+      div(id="KY-0" class="piece")
+      div(id="KE-0" class="piece")
+      div(id="GI-0" class="piece")
+      div(id="KI-0" class="piece")
+      div(id="KA-0" class="piece")
+      div(id="HI-0" class="piece")
+      div(id="OU-0" class="piece")
+      div(id="GY-0" class="piece")
+    
+      div(id="TO-0" class="piece")
+      div(id="NY-0" class="piece")
+      div(id="NK-0" class="piece")
+      div(id="NG-0" class="piece")
+      div(id="UM-0" class="piece")
+      div(id="RY-0" class="piece")
+    
+      div(id="FU-1" class="piece")
+      div(id="KY-1" class="piece")
+      div(id="KE-1" class="piece")
+      div(id="GI-1" class="piece")
+      div(id="KI-1" class="piece")
+      div(id="KA-1" class="piece")
+      div(id="HI-1" class="piece")
+      div(id="OU-1" class="piece")
+      div(id="GY-1" class="piece")
+    
+      div(id="TO-1" class="piece")
+      div(id="NY-1" class="piece")
+      div(id="NK-1" class="piece")
+      div(id="NG-1" class="piece")
+      div(id="UM-1" class="piece")
+      div(id="RY-1" class="piece")
+      
+      button(id="previous-button") 一手取り消す
+    
+      div(id="description-area")
+          p ※[成りますか？]は[OK]で “成”、[キャンセル]で “不成” です。

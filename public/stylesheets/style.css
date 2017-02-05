@@ -4,16 +4,24 @@
 .table {
   white-space: pre-wrap;
 }
-.btn{
+.btn {
   white-space: pre-wrap;
 }
-#kif-div{
+#kif-div {
   display: none;
+  text-align: center;
 }
-#comment-area{
+#kif-area {
+  text-align: left;
+}
+#comment-div {
+  text-align: center;
+}
+#comment-area {
   display: none;
+  text-align: left;
 }
-#toTop{
+#toTop {
   display: none;
   color: gray;
   position: fixed;

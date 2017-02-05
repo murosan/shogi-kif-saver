@@ -1,0 +1,107 @@
+body {
+  padding: 30px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.cap-area {
+  position: absolute;
+  width: 200px;
+  height: 300px;
+  background-image: url('../images/cap_stand.png');
+}
+
+#se-capture {
+  top: 20px;
+  left: 20px;
+}
+
+#fi-capture {
+  top: 244px;
+  left: 701px;
+}
+
+#board-area {
+  position: absolute;
+  top: 0px;
+  left: 201px;
+}
+
+#kif-generate-area {
+  position: absolute;
+  top: 325px;
+  left: 20px;
+  width: 200px;
+  height: 219px;
+  overflow: auto;
+  background-color: #E9E9E9;
+  white-space: pre-wrap;
+}
+
+.piece {
+  width: 53px;
+  height: 58px;
+  border: 1px solid;
+  border-collapse: collapse;
+  position: absolute;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #C39D51;
+  display: none;
+}
+
+#FU-0 { background-image: url('../images/0FU.png'); }
+#KY-0 { background-image: url('../images/0KY.png'); }
+#KE-0 { background-image: url('../images/0KE.png'); }
+#GI-0 { background-image: url('../images/0GI.png'); }
+#KI-0 { background-image: url('../images/0KI.png'); }
+#KA-0 { background-image: url('../images/0KA.png'); }
+#HI-0 { background-image: url('../images/0HI.png'); }
+#GY-0 { background-image: url('../images/0OU.png'); }
+#OU-0 { background-image: url('../images/0OU.png'); }
+#TO-0 { background-image: url('../images/0TO.png'); }
+#NY-0 { background-image: url('../images/0NY.png'); }
+#NK-0 { background-image: url('../images/0NK.png'); }
+#NG-0 { background-image: url('../images/0NG.png'); }
+#RY-0 { background-image: url('../images/0RY.png'); }
+#UM-0 { background-image: url('../images/0UM.png'); }
+#FU-1 { background-image: url('../images/1FU.png'); }
+#KY-1 { background-image: url('../images/1KY.png'); }
+#KE-1 { background-image: url('../images/1KE.png'); }
+#GI-1 { background-image: url('../images/1GI.png'); }
+#KI-1 { background-image: url('../images/1KI.png'); }
+#KA-1 { background-image: url('../images/1KA.png'); }
+#HI-1 { background-image: url('../images/1HI.png'); }
+#GY-1 { background-image: url('../images/1OU.png'); }
+#OU-1 { background-image: url('../images/1OU.png'); }
+#TO-1 { background-image: url('../images/1TO.png'); }
+#NY-1 { background-image: url('../images/1NY.png'); }
+#NK-1 { background-image: url('../images/1NK.png'); }
+#NG-1 { background-image: url('../images/1NG.png'); }
+#RY-1 { background-image: url('../images/1RY.png'); }
+#UM-1 { background-image: url('../images/1UM.png'); }
+#emp { background-image: url('../images/blank.png'); }
+
+.confifrm-win {
+  position: absolute;
+  width: 106;
+  height: 116;
+  background-color: #474747;
+  display: none;
+}
+
+#previous-button {
+  position: absolute;
+  top: 555px;
+  left: 221px;
+  width: 100px;
+  height: 50px;
+}
+
+#description-area {
+  position: absolute;
+  top: 600px;
+  left: 60px;
+  width: 400px;
+  height: 200px;
+}

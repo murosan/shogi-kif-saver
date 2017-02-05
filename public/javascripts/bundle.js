@@ -12448,7 +12448,7 @@
 
 
 	// module
-	exports.push([module.id, ".panel {\n  white-space: pre-wrap;\n}\n.table {\n  white-space: pre-wrap;\n}\n.btn{\n  white-space: pre-wrap;\n}\n#kif-div{\n  display: none;\n}\n#comment-area{\n  display: none;\n}\n#toTop{\n  display: none;\n  color: gray;\n  position: fixed;\n  bottom: 30px;\n  right: 50px;\n}", ""]);
+	exports.push([module.id, ".panel {\n  white-space: pre-wrap;\n}\n.table {\n  white-space: pre-wrap;\n}\n.btn {\n  white-space: pre-wrap;\n}\n#kif-div {\n  display: none;\n  text-align: center;\n}\n#kif-area {\n  text-align: left;\n}\n#comment-div {\n  text-align: center;\n}\n#comment-area {\n  display: none;\n  text-align: left;\n}\n#toTop {\n  display: none;\n  color: gray;\n  position: fixed;\n  bottom: 30px;\n  right: 50px;\n}", ""]);
 
 	// exports
 

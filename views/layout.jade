@@ -13,6 +13,8 @@ html
         a(class="navbar-brand" href="/") 将棋の棋譜保存
       div(class="container-fluid")
         ul(class="nav navbar-nav navbar-right")
+          li
+            a(href="/kifgenerator" target="_blank") 棋譜ジェネレータ
           if user
             li
               a(href="/logout") #{user.username}: logout

@@ -31,4 +31,9 @@ router.get('/', (req, res, next) => {
   }
 });
 
+router.get('/kifgenerator', (req, res, next) => {
+  const title = '棋譜ジェネレータ';
+  res.render('kif-generator', { title: title });
+});
+
 module.exports = router;
