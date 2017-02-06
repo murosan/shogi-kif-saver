@@ -30,7 +30,7 @@ block content
             a(class="btn btn-default" id="show-kif") ▶︎棋譜
             a(class="btn btn-default" id="hide-kif" style="display: none") ▼棋譜
           div(id="kif-div")
-            text(id="kif-area") #{kif.kifdata}
+            p(id="kif-area") #{kif.kifdata}
             div
               button(class="btn btn-default btn-xs" id="kif-select") 棋譜を全選択
             div(id="board-on")
@@ -42,7 +42,7 @@ block content
             a(class="btn btn-default" id="show-comment") ▶︎コメント
             a(class="btn btn-default" id="hide-comment" style="display: none") ▼コメント
           div(id="comment-div")
-            text(id="comment-area") #{kif.comment}
+            p(id="comment-area") #{kif.comment}
   div
     hr
     a(class="btn btn-default" href="/collections/#{kif.collectionId}") back
