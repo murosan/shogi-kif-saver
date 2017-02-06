@@ -18,7 +18,9 @@ block content
         input(id="kifDescription" class="form-control validate[required, maxSize[25]]"
               type="text" name="kifDescription" value="#{kif.kifDescription}" placeholder="Input Text")
       div(class="form-group")
-        label(for="kifdata") Kif(棋譜ジェネレータを使って生成できます)
+        label(for="kifdata") Kif(
+          a(href="/kifgenerator" target="_blank") 棋譜ジェネレータ
+          | を使って生成できます)を使って生成できます)
         textarea(id="kifdata" class="form-control validate[required]" name="kifdata"
                 placeholder="1 ７六歩(77)\n2 ８四歩(83)\n3 ２六歩(27)\n4 ３四歩(33)\n..." rows="10") #{kif.kifdata}
       div(class="form-group")
