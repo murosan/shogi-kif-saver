@@ -978,7 +978,7 @@ html
                     ];
                   
           const selectKif = document.getElementById("select-kif");
-          selectKif.onclick = (() => {
+          selectKif.onclick = (() => { //棋譜全選択ボタン
             var kifGArea = document.getElementById("kif-generate-area");
             var range = document.createRange();
             range.selectNodeContents(kifGArea);
@@ -1001,7 +1001,7 @@ html
           });
 
           const preButton = document.getElementById("previous-button");
-          preButton.onclick = (() => {
+          preButton.onclick = (() => { //一手取り消すボタン
             if (1 < pastPlaces.length) {
               kifArray.pop();
               pastPlaces.pop();
