@@ -8,7 +8,7 @@ html
         let turn = 0; //0=先手 1=後手
         let selectedPiece; //選択された駒(int)
         let selectedCapPiece; //選択された持ち駒(elm)
-        let selP; //選択された駒の背景が赤いver
+        let selP; //選択された駒 背景が赤いver
         let selR; //選択された行
         let selC; //選択された列
         let pieces = [];
@@ -25,8 +25,8 @@ html
                          ];
         let emp, fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0, to0, ny0, nk0, ng0, um0, ry0,
                  fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1, to1, ny1, nk1, ng1, um1, ry1;
-        const kifArray = [];
-        const kifRowMap = new Map();
+        const kifArray = []; //棋譜を格納
+        const kifRowMap = new Map(); //棋譜生成の時に使う
         kifRowMap.set(0, '一');
         kifRowMap.set(1, '二');
         kifRowMap.set(2, '三');
@@ -36,7 +36,7 @@ html
         kifRowMap.set(6, '七');
         kifRowMap.set(7, '八');
         kifRowMap.set(8, '九');
-        const kifColumnMap = new Map();
+        const kifColumnMap = new Map(); //棋譜生成の時に使う
         kifColumnMap.set(0, '９');
         kifColumnMap.set(1, '８');
         kifColumnMap.set(2, '７');
@@ -46,7 +46,7 @@ html
         kifColumnMap.set(6, '３');
         kifColumnMap.set(7, '２');
         kifColumnMap.set(8, '１');
-        const kifStringMap = new Map();
+        const kifStringMap = new Map(); //棋譜生成の時に使う
         kifStringMap.set(1, '歩');
         kifStringMap.set(2, '香');
         kifStringMap.set(3, '桂');
@@ -126,18 +126,18 @@ html
         };
       
         function capClicked (c, pn) { //持ち駒をクリックした時
-          var whoseP = whosePiece(pn);
+          const whoseP = whosePiece(pn);
           if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
-            if (!selectedPiece && !selectedCapPiece) {
+            if (!selectedPiece && !selectedCapPiece) { //選択された駒がないとき
               selectedPiece = pn;
               selectedCapPiece = c;
               c.style.border = 1 + "px solid";
               c.style.borderColor = "#FFA640";
-            } else if (selectedPiece && !selectedCapPiece) {
+            } else if (selectedPiece && !selectedCapPiece) { //選択された駒が盤上のとき
               selectedPiece = null;
               selP.parentElement.removeChild(selP);
               capClicked(c, pn);
-            } else if (selectedPiece && selectedCapPiece) {
+            } else if (selectedPiece && selectedCapPiece) { //選択された駒が持ち駒のとき
               selectedCapPiece.style.border = "none";
               selectedPiece = null;
               selectedCapPiece = null;
@@ -147,8 +147,8 @@ html
         };
       
         function selectTurnPiece (r, c) { //手番側が自分の駒をクリックしたとき
-          var b = document.getElementById("board-area");
-          var whoseP = whosePiece(places[r][c])
+          const b = document.getElementById("board-area");
+          const whoseP = whosePiece(places[r][c]);
           if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {
             if (selectedCapPiece) {
               selectedCapPiece.style.border = "none";
@@ -179,7 +179,7 @@ html
         };
       
         function selectUnTurnPiece (r, c) { //手番側が相手の駒をクリックしたとき
-          let putAndShow = (() => {
+          const putAndShow = (() => {
             places[r][c] = selectedPiece; //駒の移動
             places[selR][selC] = 0; //移動元をempに
             selectedPiece = null;
@@ -197,7 +197,7 @@ html
             } else {//成れない駒
               generateKif(r, c, 0);
             }
-            var targetPiece = places[r][c];
+            let targetPiece = places[r][c];
             if (10<=targetPiece){
               targetPiece = turnPiece(targetPiece);
             }
@@ -211,13 +211,13 @@ html
         };
       
         function selectEmp (r, c) { //空のマスをクリックしたとき
-          let putAndShow = (() => {
+          const putAndShow = (() => {
             places[r][c] = selectedPiece;
             selectedPiece = null;
             turn = 1 - turn;
             showBoard();
           });
-          if (selectedPiece && movingCheck(selectedPiece, r, c)) { //駒が選択されている&&動きルールに従っている
+          if (selectedPiece && movingCheck(selectedPiece, r, c)) { //駒が選択されている&&動きがルールに従っている
             if (selectedCapPiece) { //持ち駒の場合
               generateKif(r, c, 3);
               if (turn === 0) {　captureDecrease(fiCaptured, selectedPiece);　}
@@ -245,38 +245,38 @@ html
         };
       
         function movingCheck (pn, r, c) {
-          var canMove = false;
+          let canMove = false;
           switch (pn) {
-            case 1: case 17:
+            case 1: case 17: //歩
               canMove = canPutFu(r, c);
               break;
-            case 2: case 18:
+            case 2: case 18: //香車
               canMove = canPutKy(r, c);
               break;
-            case 3: case 19:
+            case 3: case 19: //桂馬
               canMove = canPutKe(r, c);
               break;
-            case 4: case 20:
+            case 4: case 20: //銀
               canMove = canPutGi(r, c);
               break;
-            case 5: case 21:
+            case 5: case 21: //金系全て
             case 10: case 11: case 12: case 13:
             case 26: case 27: case 28: case 29:
               canMove = canPutKi(r, c);
               break;
-            case 6: case 22:
+            case 6: case 22: //角
               canMove = canPutKa(r, c);
               break;
-            case 7: case 23:
+            case 7: case 23: //飛
               canMove = canPutHi(r, c);
               break;
-            case 8: case 9: case 24: case 25:
+            case 8: case 9: case 24: case 25: //玉、王（今は双玉仕様）
               canMove = canPutOu(r, c);
               break;
-            case 15: case 31:
+            case 15: case 31: //馬
               canMove = canPutUm(r, c);
               break;
-            case 16: case 32:
+            case 16: case 32: //龍
               canMove = canPutRy(r, c);
               break;
           }
@@ -285,9 +285,9 @@ html
       
         function canPutFu (r, c) {
           const duplicatingFu = (() => { //二歩の判定 true=二歩 false=二歩じゃない
-            var result = false;
-            var row = 0;
-            var checkInColumn = (() => {
+            let result = false;
+            let row = 0;
+            let checkInColumn = (() => {
               while (!result) {
                 result = ((turn === 0) && !(places[row][c] !== 1)) || ((turn === 1) && !(places[row][c] !== 17));
                 row += 1;
@@ -345,10 +345,10 @@ html
         
           if (!selectedCapPiece) {
             if (selC === c) {
-              var result = true;
-              var row = selR;
+              let result = true;
+              let row = selR;
               if (turn === 0) {
-                var inColumn = [];
+                const inColumn = [];
                 for (var x=0; x<9; x++) {
                   inColumn.push(places[x][c]);
                 };
@@ -371,7 +371,7 @@ html
                   row -= 1;
                 }
               } else if (turn === 1) {
-                var inColumn = [];
+                const inColumn = [];
                 for (var x=0; x<9; x++) {
                   inColumn.push(places[x][c]);
                 };
@@ -490,17 +490,9 @@ html
           });
         
           if (!selectedCapPiece) {
-            if (turn === 0) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
-                if (placeMatch()) {
-                  return true;
-                }
-              }
-            } else if (turn === 1) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
-                if (placeMatch()) {
-                  return true;
-                }
+            if (places[r][c] === 0 || whosePiece(places[r][c]) === (1 - turn)) {
+              if (placeMatch()) {
+                return true;
               }
             }
           } else if (selectedCapPiece) {
@@ -544,17 +536,9 @@ html
           });
         
           if (!selectedCapPiece) {
-            if (turn === 0) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
-                if (placeMatch()) {
-                  return true;
-                }
-              }
-            } else if (turn === 1) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
-                if (placeMatch()) {
-                  return true;
-                }
+            if (places[r][c] === 0 || whosePiece(places[r][c]) === (1 - turn)) {
+              if (placeMatch()) {
+                return true;
               }
             }
           } else if (selectedCapPiece) {
@@ -781,17 +765,9 @@ html
           });
         
           if (!selectedCapPiece) {
-            if (turn === 0) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 1) {
-                if (placeMatch()) {
-                  return true;
-                }
-              }
-            } else if (turn === 1) {
-              if (places[r][c] === 0 || whosePiece(places[r][c]) === 0) {
-                if (placeMatch()) {
-                  return true;
-                }
+            if (places[r][c] === 0 || whosePiece(places[r][c]) === (1 - turn)) {
+              if (placeMatch()) {
+                return true;
               }
             }
           } else {
@@ -890,8 +866,8 @@ html
           }
           for(var r=0; r<=8; r++) {
             for(var c=0; c<=8; c++) {
-              var z = pieces[places[r][c]];
-              var p = z.cloneNode(true);
+              const z = pieces[places[r][c]];
+              const p = z.cloneNode(true);
               p.style.left = (c * 53 + 20) + "px";
               p.style.top = (r * 58 + 20) + "px";
               p.style.display = "inline";
@@ -900,7 +876,7 @@ html
                 (function() {
                   var _r = r, _c = c;
                   p.onclick = (() => {
-                    var whoseP = whosePiece(places[_r][_c]);
+                    const whoseP = whosePiece(places[_r][_c]);
                     if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
                       selectTurnPiece(_r, _c);
                     } else if ((turn === 0 && whoseP === 1) || (turn === 1 && whoseP === 0)) {//手番側が相手の駒をクリックしたら
