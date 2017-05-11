@@ -78,7 +78,7 @@ html
         kifStringMap.set(29, '成銀');
         kifStringMap.set(31, '馬');
         kifStringMap.set(32, '龍');
-        
+
         function whosePiece(x) { //誰の駒か
           if (1 <= x && x <= 16) {
             return 0; //先手の駒
@@ -88,11 +88,11 @@ html
             return null;
           }
         };
-        
+
         function canPromote(x) { //成れる駒かどうか
           return (1 <= x && x <= 4) || (6 <= x && x <= 7) || (17 <= x && x <= 20) || (22 <= x && x <= 23);
         };
-        
+
         function inEnemyArea(r) { //敵陣かどうか
           if ((r <= 2 && turn === 0) || (selR <= 2 && turn === 0)) {
             return true;
@@ -102,14 +102,14 @@ html
             return false;
           }
         };
-        
+
         function turnPiece(p) { //駒を1~9の範囲に(持ち駒判定のため)
           if (p >= 26) { p -= 25; }
           else if (p >= 17) { p -= 16; }
           else if (p >= 10) { p -= 9; }
           return p;
         };
-        
+
         function capPieceStyle(c, t, l) { //持ち駒表示の時にstyleを変更
           c.style.top = t + "px";
           c.style.left = l + "px";
@@ -117,15 +117,15 @@ html
           c.style.backgroundColor = "transparent";
           c.style.border = "none";
         };
-        
+
         function captureIncrease(a, p) { //持ち駒追加
           a[p] += 1;
         };
-        
+
         function captureDecrease(a, p) { //持ち駒減らす
           a[p] -= 1;
         };
-        
+
         function capClicked(c, pn) { //持ち駒をクリックした時
           const whoseP = whosePiece(pn);
           if (whoseP === turn) {//手番側が自分の駒をクリックしたら
@@ -146,7 +146,7 @@ html
             }
           }
         };
-        
+
         function selectTurnPiece(r, c) { //手番側が自分の駒をクリックしたとき
           const b = document.getElementById("board-area");
           const whoseP = whosePiece(places[r][c]);
@@ -178,7 +178,7 @@ html
             selectTurnPiece(r, c);
           }
         };
-        
+
         function selectUnTurnPiece(r, c) { //手番側が相手の駒をクリックしたとき
           const putAndShow = (() => {
             places[r][c] = selectedPiece; //駒の移動
@@ -210,7 +210,7 @@ html
             putAndShow();
           }
         };
-        
+
         function selectEmp(r, c) { //空のマスをクリックしたとき
           const putAndShow = (() => {
             places[r][c] = selectedPiece;
@@ -244,7 +244,7 @@ html
           }
         
         };
-        
+
         function movingCheck(pn, r, c) {
           let canMove = false;
           switch (pn) {
@@ -283,7 +283,7 @@ html
           }
           return canMove;
         }
-        
+
         function canPutFu(r, c) {
           const duplicatingFu = (() => { //二歩の判定 true=二歩 false=二歩じゃない
             let result = false;
@@ -334,7 +334,7 @@ html
             return true;
           }
         }
-        
+
         function canPutKy(r, c) {
           const canMoveNextTime = (() => {
             if (turn === 0) {
@@ -406,7 +406,7 @@ html
             return places[r][c] === 0 && canMoveNextTime();
           }
         }
-        
+
         function canPutKe(r, c) {
           let nextRow, nextLeftCol, nextRightCol;
           const canMoveNextTime = (() => {
@@ -454,7 +454,7 @@ html
             return (places[r][c] === 0) && canMoveNextTime();
           }
         }
-        
+
         function canPutGi(r, c) {
           const placeMatch = (() => {
             let result;
@@ -500,7 +500,7 @@ html
             return places[r][c] === 0;
           }
         }
-        
+
         function canPutKi(r, c) {
           const placeMatch = (() => {
             let result;
@@ -546,7 +546,7 @@ html
             return places[r][c] === 0;
           }
         }
-        
+
         function canPutKa(r, c) {
           const checkMovement = (() => {
             let movR = selR;
@@ -643,7 +643,7 @@ html
             return places[r][c] === 0;
           }
         }
-        
+
         function canPutHi(r, c) {
           const checkColumnMovement = (() => {// 横の動きをチェック
             let result = false;
@@ -741,7 +741,7 @@ html
             return places[r][c] === 0;
           }
         }
-        
+
         function canPutOu(r, c) {
           const placeMatch = (() => {
             let result;
@@ -775,15 +775,15 @@ html
             return false;
           }
         }
-        
+
         function canPutUm(r, c) {
           return canPutOu(r, c) || canPutKa(r, c);
         }
-        
+
         function canPutRy(r, c) {
           return canPutOu(r, c) || canPutHi(r, c);
         }
-        
+
         function generateKif(r, c, status) { // status: 0=なし 1=成 2=不成 3=打
           switch (status) {
             case 0:
@@ -806,21 +806,17 @@ html
           }
           kifArray.push(generatedKif);
         };
-        
+
         function showKif() { //棋譜表示
           const kifArea = document.getElementById('kif-generate-area');
           const fragment = document.createDocumentFragment();
-          while (kifArea.firstChild) {
-            kifArea.removeChild(kifArea.firstChild);
-          }
           kifArray.forEach((k, i) => {
             k = (i + 1) + ' ' + k + '\n';
             fragment.appendChild(document.createTextNode(k));
           });
-          kifArea.appendChild(fragment);
-          kifArea.scrollTop = kifArea.scrollHeight;
+          kifArea.value = fragment;
         };
-        
+
         function showCapture(id, t, cap) { //持ち駒表示(id=fi-capture or se-capture, t=turn, cap=fiCaptured or seCaptured)
           const capArea = document.getElementById(id);
           const fragment = document.createDocumentFragment();
@@ -859,7 +855,7 @@ html
           }
           capArea.appendChild(fragment);
         };
-        
+
         function showBoard() { //盤面表示
           const boardArea = document.getElementById('board-area');
           while (boardArea.firstChild) {
@@ -921,7 +917,7 @@ html
           showCapture("se-capture", 1, seCaptured);
           showKif();
         };
-        
+
         window.onload = (() => {
           emp = document.getElementById("emp"); // 空0
           fu0 = document.getElementById("FU-0"); // 歩1
@@ -981,7 +977,7 @@ html
           const selectKif = document.getElementById("select-kif");
           selectKif.onclick = (() => { //棋譜全選択ボタン
             const kifGArea = document.getElementById("kif-generate-area");
-            ifGArea.select();
+            kifGArea.select();
             document.execCommand('copy');
           });
         
@@ -1023,7 +1019,7 @@ html
       div(id="se-capture" class="cap-area")
       div(id="fi-capture" class="cap-area")
       div(id="board-area")
-      div(id="kif-generate-area")
+      textarea(id="kif-generate-area")
       button(id="select-kif") 棋譜をコピー
     
       div(id="emp" class="piece")
