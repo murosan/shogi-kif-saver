@@ -83,25 +83,9 @@ scrollBtn.click(() => { // scroll to top
   }, 1000);
 });
 
-// 指定のテキストを全選択する
+// 指定のテキストをコピーする
 function select(id) {
-  var element = document.getElementById(id);
-  var range = document.createRange();
-  range.selectNodeContents(element);
-  var selected = window.getSelection();
-  // 選択できるかどうか
-  var forcusing = selected.focusNode
-  if (forcusing) {
-    var selectedArea = forcusing.parentElement;
-    if (selectedArea && selectedArea === range.startContainer) {
-      selected.addRange(range); // 選択させる
-      return true;
-    } else {
-      alert('棋譜欄をクリックまたは一部を選択してから、もう一度押してください。');
-      return false;
-    }
-  } else {
-    alert('棋譜欄をクリックまたは一部を選択してから、もう一度押してください。');
-    return false;
-  }
+  const element = document.getElementById(id);
+  element.select();
+  document.execCommand('copy');
 }

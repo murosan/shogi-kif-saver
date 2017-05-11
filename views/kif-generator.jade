@@ -1,6 +1,7 @@
 doctype html
 html
   head
+    title 棋譜ジェネレータ
     link(rel='stylesheet', href='/stylesheets/kif-generator-style.css')
   body
     block content
@@ -13,18 +14,18 @@ html
         let selC; //選択された列
         let pieces = [];
         let places = []; //駒配置
-        let fiCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//先手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉,　王]
-        let seCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//後手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉,　王]
+        let fiCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//先手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉, 王]
+        let seCaptured = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//後手の持ち駒[emp, 歩, 香, 桂, 銀, 金, 角, 飛, 玉, 王]
         const pastPlaces = []; //過去の駒配置
         let pastFiCap = []; //過去の先手の持ち駒
         let pastSeCap = []; //過去の後手の持ち駒
         const capName = ['emp', 'fu', 'ky', 'ke', 'gi', 'ki', 'ka', 'hi', 'gy', 'ou',
-                         'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
-                         'emp', 'fu', 'ky', 'ke', 'gi', 'ki', 'ka', 'hi', 'gy', 'ou',
-                         'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
-                         ];
+          'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
+          'emp', 'fu', 'ky', 'ke', 'gi', 'ki', 'ka', 'hi', 'gy', 'ou',
+          'to', 'nk', 'nk', 'ng', 'emp', 'um', 'ry',
+        ];
         let emp, fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0, to0, ny0, nk0, ng0, um0, ry0,
-                 fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1, to1, ny1, nk1, ng1, um1, ry1;
+          fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1, to1, ny1, nk1, ng1, um1, ry1;
         const kifArray = []; //棋譜を格納
         const kifRowMap = new Map(); //棋譜生成の時に使う
         kifRowMap.set(0, '一');
@@ -77,57 +78,57 @@ html
         kifStringMap.set(29, '成銀');
         kifStringMap.set(31, '馬');
         kifStringMap.set(32, '龍');
-      
-        function whosePiece (x) { //誰の駒か
-          if(1 <= x && x <= 16) {
+        
+        function whosePiece(x) { //誰の駒か
+          if (1 <= x && x <= 16) {
             return 0; //先手の駒
-          } else if(16 <= x) {
+          } else if (16 <= x) {
             return 1; //後手の駒
           } else {
             return null;
           }
         };
-      
-        function canPromote (x) { //成れる駒かどうか
-          return (1<=x && x<=4) || (6<=x && x<=7) || (17<=x && x<=20) || (22<=x && x<=23);
+        
+        function canPromote(x) { //成れる駒かどうか
+          return (1 <= x && x <= 4) || (6 <= x && x <= 7) || (17 <= x && x <= 20) || (22 <= x && x <= 23);
         };
-      
-        function inEnemyArea (r) { //敵陣かどうか
-          if ((r<=2 && turn === 0) || (selR<=2 && turn === 0)) {
+        
+        function inEnemyArea(r) { //敵陣かどうか
+          if ((r <= 2 && turn === 0) || (selR <= 2 && turn === 0)) {
             return true;
-          } else if ((r>=6 && turn === 1) || (selR>=6 && turn === 1)) {
+          } else if ((r >= 6 && turn === 1) || (selR >= 6 && turn === 1)) {
             return true;
           } else {
             return false;
           }
         };
-      
-        function turnPiece (p) { //駒を1~9の範囲に(持ち駒判定のため)
+        
+        function turnPiece(p) { //駒を1~9の範囲に(持ち駒判定のため)
           if (p >= 26) { p -= 25; }
           else if (p >= 17) { p -= 16; }
           else if (p >= 10) { p -= 9; }
           return p;
         };
-      
-        function capPieceStyle (c, t, l) { //持ち駒表示の時にstyleを変更
+        
+        function capPieceStyle(c, t, l) { //持ち駒表示の時にstyleを変更
           c.style.top = t + "px";
           c.style.left = l + "px";
           c.style.display = "inline";
           c.style.backgroundColor = "transparent";
           c.style.border = "none";
         };
-      
-        function captureIncrease (a, p) { //持ち駒追加
+        
+        function captureIncrease(a, p) { //持ち駒追加
           a[p] += 1;
         };
-      
-        function captureDecrease (a, p) { //持ち駒減らす
-          a[p] -= 1; 
+        
+        function captureDecrease(a, p) { //持ち駒減らす
+          a[p] -= 1;
         };
-      
-        function capClicked (c, pn) { //持ち駒をクリックした時
+        
+        function capClicked(c, pn) { //持ち駒をクリックした時
           const whoseP = whosePiece(pn);
-          if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
+          if (whoseP === turn) {//手番側が自分の駒をクリックしたら
             if (!selectedPiece && !selectedCapPiece) { //選択された駒がないとき
               selectedPiece = pn;
               selectedCapPiece = c;
@@ -143,13 +144,13 @@ html
               selectedCapPiece = null;
               capClicked(c, pn);
             }
-          } 
+          }
         };
-      
-        function selectTurnPiece (r, c) { //手番側が自分の駒をクリックしたとき
+        
+        function selectTurnPiece(r, c) { //手番側が自分の駒をクリックしたとき
           const b = document.getElementById("board-area");
           const whoseP = whosePiece(places[r][c]);
-          if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {
+          if (whoseP === turn) {
             if (selectedCapPiece) {
               selectedCapPiece.style.border = "none";
               selectedCapPiece = null;
@@ -174,11 +175,11 @@ html
           } else if (selectedPiece) {
             selectedPiece = null;
             selP.parentElement.removeChild(selP);
-            selectTurnPiece(r,c);
+            selectTurnPiece(r, c);
           }
         };
-      
-        function selectUnTurnPiece (r, c) { //手番側が相手の駒をクリックしたとき
+        
+        function selectUnTurnPiece(r, c) { //手番側が相手の駒をクリックしたとき
           const putAndShow = (() => {
             places[r][c] = selectedPiece; //駒の移動
             places[selR][selC] = 0; //移動元をempに
@@ -198,7 +199,7 @@ html
               generateKif(r, c, 0);
             }
             let targetPiece = places[r][c];
-            if (10<=targetPiece){
+            if (10 <= targetPiece) {
               targetPiece = turnPiece(targetPiece);
             }
             if (turn === 0) {
@@ -209,8 +210,8 @@ html
             putAndShow();
           }
         };
-      
-        function selectEmp (r, c) { //空のマスをクリックしたとき
+        
+        function selectEmp(r, c) { //空のマスをクリックしたとき
           const putAndShow = (() => {
             places[r][c] = selectedPiece;
             selectedPiece = null;
@@ -220,8 +221,8 @@ html
           if (selectedPiece && movingCheck(selectedPiece, r, c)) { //駒が選択されている&&動きがルールに従っている
             if (selectedCapPiece) { //持ち駒の場合
               generateKif(r, c, 3);
-              if (turn === 0) {　captureDecrease(fiCaptured, selectedPiece);　}
-              else if (turn === 1) {　captureDecrease(seCaptured, turnPiece(selectedPiece));　}
+              if (turn === 0) { 　captureDecrease(fiCaptured, selectedPiece); 　}
+              else if (turn === 1) { 　captureDecrease(seCaptured, turnPiece(selectedPiece)); 　}
               selectedCapPiece = null;
               putAndShow();
             } else if (canPromote(selectedPiece) && inEnemyArea(r)) { //盤上の駒で成れる駒
@@ -243,8 +244,8 @@ html
           }
         
         };
-      
-        function movingCheck (pn, r, c) {
+        
+        function movingCheck(pn, r, c) {
           let canMove = false;
           switch (pn) {
             case 1: case 17: //歩
@@ -282,8 +283,8 @@ html
           }
           return canMove;
         }
-      
-        function canPutFu (r, c) {
+        
+        function canPutFu(r, c) {
           const duplicatingFu = (() => { //二歩の判定 true=二歩 false=二歩じゃない
             let result = false;
             let row = 0;
@@ -291,7 +292,7 @@ html
               while (!result) {
                 result = ((turn === 0) && !(places[row][c] !== 1)) || ((turn === 1) && !(places[row][c] !== 17));
                 row += 1;
-                if (result || row === 9) { break; } 
+                if (result || row === 9) { break; }
               }
             });
             if (selectedCapPiece) {
@@ -305,11 +306,11 @@ html
           });
         
           const canMoveNextTime = (() => {
-            if (turn === 0) { 
-              return (r-1) >= 0;
+            if (turn === 0) {
+              return (r - 1) >= 0;
             } else if (turn === 1) {
-              return (r+1) <= 8;
-            } 
+              return (r + 1) <= 8;
+            }
           });
         
           if (selectedCapPiece) { //持ち駒が選択されていたら
@@ -333,14 +334,14 @@ html
             return true;
           }
         }
-      
-        function canPutKy (r, c) {
+        
+        function canPutKy(r, c) {
           const canMoveNextTime = (() => {
             if (turn === 0) {
-              return (r-1) >= 0;
+              return (r - 1) >= 0;
             } else if (turn === 1) {
-              return (r+1) <= 8;
-            } 
+              return (r + 1) <= 8;
+            }
           });
         
           if (!selectedCapPiece) {
@@ -349,14 +350,14 @@ html
               let row = selR;
               if (turn === 0) {
                 const inColumn = [];
-                for (var x=0; x<9; x++) {
+                for (let x = 0; x < 9; x++) {
                   inColumn.push(places[x][c]);
                 };
                 row -= 1;
                 while (result) {
                   if (whosePiece(inColumn[row]) === 1) {
                     if (row === r) {
-                      result== true;
+                      result == true;
                       break;
                     } else if (r < row) {
                       result = false;
@@ -372,14 +373,14 @@ html
                 }
               } else if (turn === 1) {
                 const inColumn = [];
-                for (var x=0; x<9; x++) {
+                for (let x = 0; x < 9; x++) {
                   inColumn.push(places[x][c]);
                 };
                 row += 1;
                 while (result) {
                   if (whosePiece(inColumn[row]) === 0) {
                     if (row === r) {
-                      result== true;
+                      result == true;
                       break;
                     } else if (r > row) {
                       result = false;
@@ -402,11 +403,11 @@ html
               return false;
             }
           } else if (selectedCapPiece) {
-              return places[r][c] === 0 && canMoveNextTime();
+            return places[r][c] === 0 && canMoveNextTime();
           }
         }
-      
-        function canPutKe (r, c) {
+        
+        function canPutKe(r, c) {
           let nextRow, nextLeftCol, nextRightCol;
           const canMoveNextTime = (() => {
             if (turn === 0) {
@@ -453,8 +454,8 @@ html
             return (places[r][c] === 0) && canMoveNextTime();
           }
         }
-      
-        function canPutGi (r, c) {
+        
+        function canPutGi(r, c) {
           const placeMatch = (() => {
             let result;
             let insideResult = false;
@@ -480,7 +481,7 @@ html
                   outsideResult = (selR + dr) === r;
                 }
               }
-              if (outsideResult && insideResult) { 
+              if (outsideResult && insideResult) {
                 result = true;
                 break;
               }
@@ -499,8 +500,8 @@ html
             return places[r][c] === 0;
           }
         }
-      
-        function canPutKi (r, c) {
+        
+        function canPutKi(r, c) {
           const placeMatch = (() => {
             let result;
             let insideResult = false;
@@ -526,7 +527,7 @@ html
                   outsideResult = (selR + dr) === r;
                 }
               }
-              if (outsideResult && insideResult) { 
+              if (outsideResult && insideResult) {
                 result = true;
                 break;
               }
@@ -545,8 +546,8 @@ html
             return places[r][c] === 0;
           }
         }
-      
-        function canPutKa (r, c) {
+        
+        function canPutKa(r, c) {
           const checkMovement = (() => {
             let movR = selR;
             let movC = selC;
@@ -559,7 +560,7 @@ html
                   break;
                 } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
                   result = true;
-                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
                   break;
                 } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
                   result = true;
@@ -580,7 +581,7 @@ html
                   break;
                 } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
                   result = true;
-                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
                   break;
                 } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
                   result = true;
@@ -601,7 +602,7 @@ html
                   break;
                 } else if (places[movR][movC] === 0 && (movR === r && movC == c)) {
                   result = true;
-                }  else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
+                } else if (whosePiece(places[movR][movC]) === (1 - turn) && !(movR === r && movC === c)) {
                   break;
                 } else if (whosePiece(places[movR][movC]) === (1 - turn) && (movR === r && movC === c)) {
                   result = true;
@@ -642,8 +643,8 @@ html
             return places[r][c] === 0;
           }
         }
-      
-        function canPutHi (r, c) {
+        
+        function canPutHi(r, c) {
           const checkColumnMovement = (() => {// 横の動きをチェック
             let result = false;
             let fix = selR;
@@ -740,22 +741,22 @@ html
             return places[r][c] === 0;
           }
         }
-      
-        function canPutOu (r, c) {
+        
+        function canPutOu(r, c) {
           const placeMatch = (() => {
             let result;
             let insideResult = false;
             let outsideResult = false;
             let dr = -1;
             let dc = -1;
-            while(dr <= 1) {
-              while(dc <= 1) {
+            while (dr <= 1) {
+              while (dc <= 1) {
                 insideResult = (selC + dc) === c;
                 if (insideResult) { break; }
                 dc++;
               }
               outsideResult = (selR + dr) === r;
-              if (outsideResult && insideResult) { 
+              if (outsideResult && insideResult) {
                 result = true;
                 break;
               }
@@ -774,17 +775,17 @@ html
             return false;
           }
         }
-      
-        function canPutUm (r, c) {
+        
+        function canPutUm(r, c) {
           return canPutOu(r, c) || canPutKa(r, c);
         }
-      
-        function canPutRy (r, c) {
+        
+        function canPutRy(r, c) {
           return canPutOu(r, c) || canPutHi(r, c);
         }
-      
-        function generateKif (r, c, status) { // status: 0=なし 1=成 2=不成 3=打
-          switch(status) {
+        
+        function generateKif(r, c, status) { // status: 0=なし 1=成 2=不成 3=打
+          switch (status) {
             case 0:
               status = '';
               break;
@@ -799,39 +800,39 @@ html
               break;
           }
           let generatedKif = kifColumnMap.get(c) + kifRowMap.get(r) +
-                          kifStringMap.get(selectedPiece) + status;
+            kifStringMap.get(selectedPiece) + status;
           if (status !== '打') {
-            generatedKif = generatedKif + '(' + (9-selC) + (selR+1) + ')'
+            generatedKif = generatedKif + '(' + (9 - selC) + (selR + 1) + ')'
           }
           kifArray.push(generatedKif);
         };
-      
-        function showKif () { //棋譜表示
-          var kifArea = document.getElementById('kif-generate-area');
-          var fragment = document.createDocumentFragment();
+        
+        function showKif() { //棋譜表示
+          const kifArea = document.getElementById('kif-generate-area');
+          const fragment = document.createDocumentFragment();
           while (kifArea.firstChild) {
             kifArea.removeChild(kifArea.firstChild);
           }
           kifArray.forEach((k, i) => {
-            k = (i+1) + ' ' + k + '\n';
+            k = (i + 1) + ' ' + k + '\n';
             fragment.appendChild(document.createTextNode(k));
           });
           kifArea.appendChild(fragment);
           kifArea.scrollTop = kifArea.scrollHeight;
         };
-      
-        function showCapture (id, t, cap) { //持ち駒表示(id=fi-capture or se-capture, t=turn, cap=fiCaptured or seCaptured)
+        
+        function showCapture(id, t, cap) { //持ち駒表示(id=fi-capture or se-capture, t=turn, cap=fiCaptured or seCaptured)
           const capArea = document.getElementById(id);
           const fragment = document.createDocumentFragment();
           while (capArea.firstChild) {
             capArea.removeChild(capArea.firstChild);
           }
         
-          for (var i=1; i<=9; i++) {
+          for (let i = 1; i <= 9; i++) {
             if (0 < cap[i]) {
               let pn = i;
               if (t === 1) { pn += 16; }
-              for (var j=1; j<=cap[i]; j++) {
+              for (let j = 1; j <= cap[i]; j++) {
                 let x;
                 let y;
                 if (i === 1) { x = 225; y = 5 + j * 7 }
@@ -858,14 +859,14 @@ html
           }
           capArea.appendChild(fragment);
         };
-      
-        function showBoard () { //盤面表示
+        
+        function showBoard() { //盤面表示
           const boardArea = document.getElementById('board-area');
-          while(boardArea.firstChild) {
+          while (boardArea.firstChild) {
             boardArea.removeChild(boardArea.firstChild);
           }
-          for(var r=0; r<=8; r++) {
-            for(var c=0; c<=8; c++) {
+          for (let r = 0; r <= 8; r++) {
+            for (let c = 0; c <= 8; c++) {
               const z = pieces[places[r][c]];
               const p = z.cloneNode(true);
               p.style.left = (c * 53 + 20) + "px";
@@ -873,13 +874,13 @@ html
               p.style.display = "inline";
               boardArea.appendChild(p);
               if (places[r][c] !== 0) { //駒があれば
-                (function() {
-                  var _r = r, _c = c;
+                (function () {
+                  const _r = r, _c = c;
                   p.onclick = (() => {
                     const whoseP = whosePiece(places[_r][_c]);
-                    if ((turn === 0 && whoseP === 0) || (turn === 1 && whoseP === 1)) {//手番側が自分の駒をクリックしたら
+                    if (whoseP === turn) {//手番側が自分の駒をクリックしたら
                       selectTurnPiece(_r, _c);
-                    } else if ((turn === 0 && whoseP === 1) || (turn === 1 && whoseP === 0)) {//手番側が相手の駒をクリックしたら
+                    } else if (whoseP === (1 - turn)) {//手番側が相手の駒をクリックしたら
                       if (selectedPiece) {
                         selectUnTurnPiece(_r, _c);
                       }
@@ -888,10 +889,10 @@ html
                 })();
               }
               if (places[r][c] === 0) { //空ますクリック
-                (function() {
-                  var _r = r, _c = c;
+                (function () {
+                  let _r = r, _c = c;
                   p.onclick = (() => {
-                    if (selectedPiece|| selectedCapPiece) { selectEmp(_r, _c); }
+                    if (selectedPiece || selectedCapPiece) { selectEmp(_r, _c); }
                   });
                 })();
               }
@@ -902,25 +903,25 @@ html
           let pPlaces = [];
           let pFCap = [];
           let pSCap = [];
-          for (var i=0; i<=8; i++) {
+          for (let i = 0; i <= 8; i++) {
             pPlaces[i] = [];
-            for (var j=0; j<=8; j++) {
+            for (let j = 0; j <= 8; j++) {
               pPlaces[i][j] = places[i][j];
             }
           }
-          for (var k=0; k<=9; k++) {
+          for (let k = 0; k <= 9; k++) {
             pFCap[k] = fiCaptured[k];
             pSCap[k] = seCaptured[k];
           }
           pastPlaces.push(pPlaces);
           pastFiCap.push(pFCap);
           pastSeCap.push(pSCap);
-          
+        
           showCapture("fi-capture", 0, fiCaptured);
           showCapture("se-capture", 1, seCaptured);
           showKif();
         };
-      
+        
         window.onload = (() => {
           emp = document.getElementById("emp"); // 空0
           fu0 = document.getElementById("FU-0"); // 歩1
@@ -958,48 +959,32 @@ html
           ry1 = document.getElementById("RY-1"); // 龍32
         
           pieces = [emp,
-                    fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0,
-                    to0, ny0, nk0, ng0, emp, um0, ry0,
-                    fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1,
-                    to1, ny1, nk1, ng1, emp, um1, ry1
-                    ];
-                  
+            fu0, ky0, ke0, gi0, ki0, ka0, hi0, gy0, ou0,
+            to0, ny0, nk0, ng0, emp, um0, ry0,
+            fu1, ky1, ke1, gi1, ki1, ka1, hi1, gy1, ou1,
+            to1, ny1, nk1, ng1, emp, um1, ry1
+          ];
+        
           //初期配置
           places = [
-                    [18, 19, 20, 21, 24, 21, 20, 19, 18],
-                    [0, 23, 0, 0, 0, 0, 0, 22, 0],
-                    [17, 17, 17, 17, 17, 17, 17, 17, 17],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [0, 6, 0, 0, 0, 0, 0, 7, 0],
-                    [2, 3, 4, 5, 9, 5, 4, 3, 2]
-                    ];
-                  
+            [18, 19, 20, 21, 24, 21, 20, 19, 18],
+            [0, 23, 0, 0, 0, 0, 0, 22, 0],
+            [17, 17, 17, 17, 17, 17, 17, 17, 17],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 6, 0, 0, 0, 0, 0, 7, 0],
+            [2, 3, 4, 5, 9, 5, 4, 3, 2]
+          ];
+        
           const selectKif = document.getElementById("select-kif");
           selectKif.onclick = (() => { //棋譜全選択ボタン
-            var kifGArea = document.getElementById("kif-generate-area");
-            var range = document.createRange();
-            range.selectNodeContents(kifGArea);
-            var selected = window.getSelection();
-            // 選択できるかどうか
-            var forcusing = selected.focusNode
-            if (forcusing) {
-              var selectedArea = forcusing.parentElement;
-              if (selectedArea && selectedArea === range.startContainer) {
-                selected.addRange(range); // 選択させる
-                return true;
-              } else {
-                alert('棋譜欄の一部を選択してから、もう一度押してください。');
-                return false;
-              }
-            } else {
-              alert('棋譜欄の一部を選択してから、もう一度押してください。');
-              return false;
-            }
+            const kifGArea = document.getElementById("kif-generate-area");
+            ifGArea.select();
+            document.execCommand('copy');
           });
-
+        
           const preButton = document.getElementById("previous-button");
           preButton.onclick = (() => { //一手取り消すボタン
             if (1 < pastPlaces.length) {
@@ -1007,12 +992,12 @@ html
               pastPlaces.pop();
               pastFiCap.pop();
               pastSeCap.pop();
-              for (var i=0; i<=8; i++) {
-                for (var j=0; j<=8; j++) {
+              for (let i = 0; i <= 8; i++) {
+                for (let j = 0; j <= 8; j++) {
                   places[i][j] = pastPlaces[pastPlaces.length - 1][i][j];
                 }
               }
-              for (var k=0; k<=9; k++) {
+              for (let k = 0; k <= 9; k++) {
                 fiCaptured[k] = pastFiCap[pastFiCap.length - 1][k];
                 seCaptured[k] = pastSeCap[pastSeCap.length - 1][k];
               }
@@ -1039,7 +1024,7 @@ html
       div(id="fi-capture" class="cap-area")
       div(id="board-area")
       div(id="kif-generate-area")
-      button(id="select-kif") 棋譜を全選択
+      button(id="select-kif") 棋譜をコピー
     
       div(id="emp" class="piece")
     
