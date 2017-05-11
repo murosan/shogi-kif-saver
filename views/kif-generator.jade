@@ -809,12 +809,12 @@ html
 
         function showKif() { //棋譜表示
           const kifArea = document.getElementById('kif-generate-area');
-          const fragment = document.createDocumentFragment();
+          let text = '';
           kifArray.forEach((k, i) => {
             k = (i + 1) + ' ' + k + '\n';
-            fragment.appendChild(document.createTextNode(k));
+            text += k;
           });
-          kifArea.value = fragment;
+          kifArea.value = text;
         };
 
         function showCapture(id, t, cap) { //持ち駒表示(id=fi-capture or se-capture, t=turn, cap=fiCaptured or seCaptured)
