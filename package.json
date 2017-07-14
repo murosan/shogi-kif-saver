@@ -7,36 +7,36 @@
     "test": "node_modules/.bin/mocha"
   },
   "dependencies": {
-    "body-parser": "~1.15.1",
+    "body-parser": "~1.17.2",
     "bootstrap": "^3.3.6",
     "cookie-parser": "~1.4.3",
     "csurf": "^1.8.3",
-    "debug": "~2.2.0",
-    "express": "~4.13.4",
+    "debug": "~2.6.8",
+    "express": "~4.15.3",
     "express-session": "^1.13.0",
-    "helmet": "^1.1.0",
+    "helmet": "^3.6.1",
     "jade": "~1.11.0",
-    "jquery": "^2.2.0",
+    "jquery": "^3.2.1",
     "moment-timezone": "^0.5.0",
-    "morgan": "~1.7.0",
+    "morgan": "~1.8.2",
     "node-uuid": "^1.4.7",
     "passport": "^0.3.2",
     "passport-github2": "^0.1.9",
-    "pg": "^4.4.3",
+    "pg": "^6.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^3.15.1",
-    "serve-favicon": "~2.3.0",
+    "sequelize": "^4.3.2",
+    "serve-favicon": "~2.4.3",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "css-loader": "^0.26.1",
-    "mocha": "^2.4.5",
+    "css-loader": "^0.28.4",
+    "mocha": "^3.4.2",
     "passport-stub": "^1.1.1",
-    "style-loader": "^0.13.1",
-    "supertest": "^1.2.0",
-    "webpack": "^1.12.13"
+    "style-loader": "^0.18.2",
+    "supertest": "^3.0.0",
+    "webpack": "^3.2.0"
   },
   "engines": {
-    "node": "4.2.3"
+    "node": "6.11.1"
   }
 }
