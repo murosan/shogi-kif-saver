@@ -17,18 +17,23 @@ function isMine(req, dataModel) {
 
 // 時間表示をフォーマット
 function timeFormatter(t) {
-  return t.formattedCreatedDate =
-    moment(t.createdDate).tz('Asia/Tokyo').format('YYYY.MM.DD HH:mm');
+  return (t.formattedCreatedDate = moment(t.createdDate)
+    .tz('Asia/Tokyo')
+    .format('YYYY.MM.DD HH:mm'));
 }
 
 // アルバム削除
 function deleteCollection(collectionId, done) {
   Kif.findAll({
     where: { collectionId }
-  }).then((kifs) => {
-    const promises = kifs.map((k) => { return k.destroy(); });
+  }).then(kifs => {
+    const promises = kifs.map(k => {
+      return k.destroy();
+    });
     Promise.all(promises).then(() => {
-      Collection.findById(collectionId).then((c) => { c.destroy(); });
+      Collection.findById(collectionId).then(c => {
+        c.destroy();
+      });
       done();
     });
   });

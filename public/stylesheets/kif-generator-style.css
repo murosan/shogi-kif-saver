@@ -1,6 +1,6 @@
 body {
   padding: 30px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px 'Lucida Grande', Helvetica, Arial, sans-serif;
 }
 
 .cap-area {
@@ -32,7 +32,7 @@ body {
   left: 20px;
   width: 180px;
   height: 219px;
-  background-color: #E9E9E9;
+  background-color: #e9e9e9;
 }
 
 #select-kif {
@@ -52,41 +52,103 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  background-color: #C39D51;
+  background-color: #c39d51;
   display: none;
 }
 
-#FU-0 { background-image: url('../images/0FU.png'); }
-#KY-0 { background-image: url('../images/0KY.png'); }
-#KE-0 { background-image: url('../images/0KE.png'); }
-#GI-0 { background-image: url('../images/0GI.png'); }
-#KI-0 { background-image: url('../images/0KI.png'); }
-#KA-0 { background-image: url('../images/0KA.png'); }
-#HI-0 { background-image: url('../images/0HI.png'); }
-#GY-0 { background-image: url('../images/0OU.png'); }
-#OU-0 { background-image: url('../images/0OU.png'); }
-#TO-0 { background-image: url('../images/0TO.png'); }
-#NY-0 { background-image: url('../images/0NY.png'); }
-#NK-0 { background-image: url('../images/0NK.png'); }
-#NG-0 { background-image: url('../images/0NG.png'); }
-#RY-0 { background-image: url('../images/0RY.png'); }
-#UM-0 { background-image: url('../images/0UM.png'); }
-#FU-1 { background-image: url('../images/1FU.png'); }
-#KY-1 { background-image: url('../images/1KY.png'); }
-#KE-1 { background-image: url('../images/1KE.png'); }
-#GI-1 { background-image: url('../images/1GI.png'); }
-#KI-1 { background-image: url('../images/1KI.png'); }
-#KA-1 { background-image: url('../images/1KA.png'); }
-#HI-1 { background-image: url('../images/1HI.png'); }
-#GY-1 { background-image: url('../images/1OU.png'); }
-#OU-1 { background-image: url('../images/1OU.png'); }
-#TO-1 { background-image: url('../images/1TO.png'); }
-#NY-1 { background-image: url('../images/1NY.png'); }
-#NK-1 { background-image: url('../images/1NK.png'); }
-#NG-1 { background-image: url('../images/1NG.png'); }
-#RY-1 { background-image: url('../images/1RY.png'); }
-#UM-1 { background-image: url('../images/1UM.png'); }
-#emp { background-image: url('../images/blank.png'); }
+#FU-0 {
+  background-image: url('../images/0FU.png');
+}
+#KY-0 {
+  background-image: url('../images/0KY.png');
+}
+#KE-0 {
+  background-image: url('../images/0KE.png');
+}
+#GI-0 {
+  background-image: url('../images/0GI.png');
+}
+#KI-0 {
+  background-image: url('../images/0KI.png');
+}
+#KA-0 {
+  background-image: url('../images/0KA.png');
+}
+#HI-0 {
+  background-image: url('../images/0HI.png');
+}
+#GY-0 {
+  background-image: url('../images/0OU.png');
+}
+#OU-0 {
+  background-image: url('../images/0OU.png');
+}
+#TO-0 {
+  background-image: url('../images/0TO.png');
+}
+#NY-0 {
+  background-image: url('../images/0NY.png');
+}
+#NK-0 {
+  background-image: url('../images/0NK.png');
+}
+#NG-0 {
+  background-image: url('../images/0NG.png');
+}
+#RY-0 {
+  background-image: url('../images/0RY.png');
+}
+#UM-0 {
+  background-image: url('../images/0UM.png');
+}
+#FU-1 {
+  background-image: url('../images/1FU.png');
+}
+#KY-1 {
+  background-image: url('../images/1KY.png');
+}
+#KE-1 {
+  background-image: url('../images/1KE.png');
+}
+#GI-1 {
+  background-image: url('../images/1GI.png');
+}
+#KI-1 {
+  background-image: url('../images/1KI.png');
+}
+#KA-1 {
+  background-image: url('../images/1KA.png');
+}
+#HI-1 {
+  background-image: url('../images/1HI.png');
+}
+#GY-1 {
+  background-image: url('../images/1OU.png');
+}
+#OU-1 {
+  background-image: url('../images/1OU.png');
+}
+#TO-1 {
+  background-image: url('../images/1TO.png');
+}
+#NY-1 {
+  background-image: url('../images/1NY.png');
+}
+#NK-1 {
+  background-image: url('../images/1NK.png');
+}
+#NG-1 {
+  background-image: url('../images/1NG.png');
+}
+#RY-1 {
+  background-image: url('../images/1RY.png');
+}
+#UM-1 {
+  background-image: url('../images/1UM.png');
+}
+#emp {
+  background-image: url('../images/blank.png');
+}
 
 #previous-button {
   position: absolute;

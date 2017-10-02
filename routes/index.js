@@ -13,12 +13,13 @@ router.get('/', (req, res, next) => {
         {
           model: User,
           attributes: ['userId', 'username']
-        }],
+        }
+      ],
       where: {
         userId: req.user.id
       },
       order: '"username" ASC'
-    }).then((collections) => {
+    }).then(collections => {
       res.render('index', {
         title: title,
         user: req.user,

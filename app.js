@@ -13,43 +13,47 @@ var User = require('./models/user');
 var Collection = require('./models/collection');
 var Kif = require('./models/kif');
 User.sync().then(() => {
-  Kif.belongsTo(User, {foreignKey: 'userId'});
-  Collection.belongsTo(User, {foreignKey: 'userId'});
+  Kif.belongsTo(User, { foreignKey: 'userId' });
+  Collection.belongsTo(User, { foreignKey: 'userId' });
   Collection.sync().then(() => {
-    Kif.belongsTo(Collection, {foreignKey: 'collectionId'});
+    Kif.belongsTo(Collection, { foreignKey: 'collectionId' });
     Kif.sync();
   });
 });
 
 var GitHubStrategy = require('passport-github2').Strategy;
-var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'd4d2ed339a41ca87f622';
-var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '9c062e9edc812e46a7bdbaa89a6682b0c39664d1';
+var GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+var GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function (obj, done) {
+passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-
-passport.use(new GitHubStrategy({
-  clientID: GITHUB_CLIENT_ID,
-  clientSecret: GITHUB_CLIENT_SECRET,
-  callbackURL: process.env.HEROKU_URL ? process.env.HEROKU_URL + 'auth/github/callback' : 'http://localhost:8000/auth/github/callback'
-},
-  function (accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      User.upsert({
-        userId: profile.id,
-        username: profile.username
-      }).then(() => {
-        done(null, profile);
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
+      callbackURL: process.env.HEROKU_URL
+        ? process.env.HEROKU_URL + 'auth/github/callback'
+        : 'http://localhost:8000/auth/github/callback'
+    },
+    function(accessToken, refreshToken, profile, done) {
+      process.nextTick(function() {
+        User.upsert({
+          userId: profile.id,
+          username: profile.username
+        }).then(() => {
+          done(null, profile);
+        });
       });
-    });
-  }
-));
+    }
+  )
+);
 
 var routes = require('./routes/index');
 var login = require('./routes/login');
@@ -82,25 +86,30 @@ app.use('/logout', logout);
 app.use('/collections', collections);
 app.use('/collections', kifs);
 
-app.get('/auth/github',
+app.get(
+  '/auth/github',
   passport.authenticate('github', { scope: ['user:email'] }),
-  function (req, res) {
-});
+  function(req, res) {}
+);
 
-app.get('/auth/github/callback',
+app.get(
+  '/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
-  function (req, res) {
+  function(req, res) {
     var loginFrom = req.cookies.loginFrom;
     // オープンリダイレクタ脆弱性対策
-    if (loginFrom &&
-     loginFrom.indexOf('http://') < 0 &&
-     loginFrom.indexOf('https://') < 0) {
+    if (
+      loginFrom &&
+      loginFrom.indexOf('http://') < 0 &&
+      loginFrom.indexOf('https://') < 0
+    ) {
       res.clearCookie('loginFrom');
       res.redirect(loginFrom);
     } else {
       res.redirect('/');
     }
-});
+  }
+);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -132,6 +141,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
